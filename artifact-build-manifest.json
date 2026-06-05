@@ -1,0 +1,137 @@
+{
+  "output": "C:\\Users\\sean7\\Apps\\forge\\agi-war-real-discontinuity.pptx",
+  "outputBytes": 56502,
+  "slideCount": 12,
+  "slideSize": {
+    "width": 1280,
+    "height": 720
+  },
+  "previewDir": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview",
+  "previewPaths": [
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-01.png",
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-02.png",
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-03.png",
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-04.png",
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-05.png",
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-06.png",
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-07.png",
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-08.png",
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-09.png",
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-10.png",
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-11.png",
+    "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\preview\\slide-12.png"
+  ],
+  "layoutDir": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final",
+  "layoutResults": [
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-01.layout.json"
+    },
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-02.layout.json"
+    },
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-03.layout.json"
+    },
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-04.layout.json"
+    },
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-05.layout.json"
+    },
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-06.layout.json"
+    },
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-07.layout.json"
+    },
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-08.layout.json"
+    },
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-09.layout.json"
+    },
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-10.layout.json"
+    },
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-11.layout.json"
+    },
+    {
+      "layoutPath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\layout\\final\\slide-12.layout.json"
+    }
+  ],
+  "slides": [
+    {
+      "index": 1,
+      "requestedSlideNumber": 1,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-01.mjs",
+      "exportName": "slide01"
+    },
+    {
+      "index": 2,
+      "requestedSlideNumber": 2,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-02.mjs",
+      "exportName": "slide02"
+    },
+    {
+      "index": 3,
+      "requestedSlideNumber": 3,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-03.mjs",
+      "exportName": "slide03"
+    },
+    {
+      "index": 4,
+      "requestedSlideNumber": 4,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-04.mjs",
+      "exportName": "slide04"
+    },
+    {
+      "index": 5,
+      "requestedSlideNumber": 5,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-05.mjs",
+      "exportName": "slide05"
+    },
+    {
+      "index": 6,
+      "requestedSlideNumber": 6,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-06.mjs",
+      "exportName": "slide06"
+    },
+    {
+      "index": 7,
+      "requestedSlideNumber": 7,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-07.mjs",
+      "exportName": "slide07"
+    },
+    {
+      "index": 8,
+      "requestedSlideNumber": 8,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-08.mjs",
+      "exportName": "slide08"
+    },
+    {
+      "index": 9,
+      "requestedSlideNumber": 9,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-09.mjs",
+      "exportName": "slide09"
+    },
+    {
+      "index": 10,
+      "requestedSlideNumber": 10,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-10.mjs",
+      "exportName": "slide10"
+    },
+    {
+      "index": 11,
+      "requestedSlideNumber": 11,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-11.mjs",
+      "exportName": "slide11"
+    },
+    {
+      "index": 12,
+      "requestedSlideNumber": 12,
+      "modulePath": "C:\\Users\\sean7\\Apps\\forge\\codex-presentations-manual-20260511-agi-war\\slides\\slide-12.mjs",
+      "exportName": "slide12"
+    }
+  ]
+}

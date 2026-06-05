@@ -1,0 +1,532 @@
+about:srcdoc:5773 Loading the font 'data:font/ttf;base64,AAEAAAALAIAAAwAwR1NVQiCLJXoAAAE4AAAAVE9TLzI3UEsuAAABjAAAAGBjbWFwNK59LwAACiQAAB66Z2x5Zil9aIkAAC0AAAGU8GhlYWRYkqBSAAAA4AAAADZoaGVhAlYDOQAAALwAAAAkaG10eGcG/+UAAAHsAAAIOGxvY2Glm0AYAAAo4AAABB5tYXhwAycBiAAAARgAAAAgbmFtZZP7uU8AAcHwAAAB+HBvc3RSL5SRAAHD6AAAHU4AAQAAASwAAAAAASz/+v/+AS4AAQAAAAAAAAAAAAAAAAAAAg4AAQAAAAEAAFB1d4VfDzz1AAsBLAAAAAB8JbCAAAAAAHwlsID/+v/8AS4BLQAAAAgAAgAAAAAAAAABAAACDgF8AA8AAAAAAAIAAAAKAAoAAAD/AAAAAAAAAAEAAAAKADAAPgACREZMVAAObGF0bgAaAAQAAAAAAAAAAQAAAAQAAAAAAAAAAQAAAAFsaWdhAA...VyYXJjaHktc3ViFHR5cGUtaGllcmFyY2h5LXN1cGVyDnR5cGUtaGllcmFyY2h5CXVuYXJjaGl2ZQZ1bmZvbGQTdW5ncm91cC1ieS1yZWYtdHlwZQZ1bmxvY2sGdW5tdXRlCnVudmVyaWZpZWQOdmFyaWFibGUtZ3JvdXAPdmVyaWZpZWQtZmlsbGVkCHZlcmlmaWVkCXZtLWFjdGl2ZQp2bS1jb25uZWN0CnZtLW91dGxpbmUKdm0tcGVuZGluZwp2bS1ydW5uaW5nCHZtLXNtYWxsAnZtAnZyD3ZzY29kZS1pbnNpZGVycwZ2c2NvZGUEd2FuZAd3YXJuaW5nBXdhdGNoCndoaXRlc3BhY2UKd2hvbGUtd29yZA13aW5kb3ctYWN0aXZlCXdvcmQtd3JhcBF3b3Jrc3BhY2UtdHJ1c3RlZBF3b3Jrc3BhY2UtdW5rbm93bhN3b3Jrc3BhY2UtdW50cnVzdGVkB3pvb20taW4Iem9vbS1vdXQAAAAA' violates the following Content Security Policy directive: "font-src 'none'". The action has been blocked.
+ DevConsole tab initialized. Call debugDevConsole() in console for debug info.
+ [Prometheus] [CAPRA] callSageApi request Object
+ [Prometheus] [CAPRA] callSageApi response Object
+ [Prometheus] [CAPRA] Prepared message context Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] [CAPRA] Run final state Object
+ [Prometheus] [CAPRA] Prepared message context Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] [CAPRA] Run final state Object
+ [Prometheus] [CAPRA] Prepared message context Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+api.capra.flankspeed.us.navy.mil/server/query:1  Failed to load resource: net::ERR_CONNECTION_TIMED_OUT
+ [Prometheus] [CAPRA] HTTP attempt error Object
+_debugLog @ about:srcdoc:59334
+ [Prometheus] [CAPRA] HTTP attempt start Object
+api.capra.flankspeed.us.navy.mil/server/query:1  Failed to load resource: net::ERR_NETWORK_CHANGED
+ [Prometheus] [CAPRA] HTTP attempt error Object
+_debugLog @ about:srcdoc:59334
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] [CAPRA] Run final state Object
+ [Prometheus] [CAPRA] Prepared message context Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] Execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution finished Object
+about:srcdoc:59334 [Prometheus] Tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] Execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution finished Object
+about:srcdoc:59334 [Prometheus] Tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] Execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution finished Object
+about:srcdoc:59334 [Prometheus] Tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] Execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution finished Object
+about:srcdoc:59334 [Prometheus] Tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution finished Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] Execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution finished Object
+about:srcdoc:59334 [Prometheus] Tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Run final state Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Prepared message context Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Run final state Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Prepared message context Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] Execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution finished Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution finished Object
+about:srcdoc:59334 [Prometheus] Tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] Execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution finished Object
+about:srcdoc:59334 [Prometheus] Tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] Execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution finished Object
+about:srcdoc:59334 [Prometheus] Tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] Execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Tool execution finished Object
+about:srcdoc:59334 [Prometheus] Tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage tool execution results Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Step context snapshot Object
+about:srcdoc:59334 [Prometheus] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Request payload Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt start Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP attempt response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] HTTP response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Parsed response candidate selection Object
+about:srcdoc:59334 [Prometheus] Parsed response Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Final parsed text Object
+about:srcdoc:59334 [Prometheus] [CAPRA] AskSage execution decision Object
+about:srcdoc:59334 [Prometheus] [CAPRA] Run final state Object
+Forge v1.9 (1).html:1 Unsafe attempt to load URL file:///C:/Users/1385718191.MIL/Downloads/Forge%20v1.9%20(1).html from frame with URL file:///C:/Users/1385718191.MIL/Downloads/Forge%20v1.9%20(1).html. 'file:' URLs are treated as unique security origins.
+

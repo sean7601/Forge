@@ -1,0 +1,274 @@
+about:blank:1 An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+ DevConsole tab initialized. Call debugDevConsole() in console for debug info.
+ [Prometheus] [CAPRA] callSageApi request Object
+ [Prometheus] [CAPRA] callSageApi response Object
+forge - 2026-03-24T175651.169.html:1 Unsafe attempt to load URL file:///C:/Users/1385718191.MIL/Downloads/forge%20-%202026-03-24T175651.169.html from frame with URL file:///C:/Users/1385718191.MIL/Downloads/forge%20-%202026-03-24T175651.169.html. 'file:' URLs are treated as unique security origins.
+
+ [Prometheus] [CAPRA] Prepared message context Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+ [Prometheus] [CAPRA] HTTP attempt start Object
+ [Prometheus] [CAPRA] HTTP attempt response Object
+ [Prometheus] [CAPRA] HTTP response Object
+ [Prometheus] [CAPRA] Parsed response candidate selection Object
+ [Prometheus] Parsed response Object
+ [Prometheus] [CAPRA] Final parsed text Object
+ [Prometheus] [CAPRA] AskSage execution decision Object
+ [Prometheus] Execution decision Object
+ [Prometheus] [CAPRA] Tool execution start Object
+ [Prometheus] [CAPRA] Tool execution finished Object
+ [Prometheus] Tool execution results Object
+ [Prometheus] [CAPRA] AskSage tool execution results Object
+ [Prometheus] [CAPRA] Step context snapshot Object
+ [Prometheus] Request payload Object
+ [Prometheus] [CAPRA] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Parsed response candidate selection Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Parsed response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Final parsed text Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution finished Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Step context snapshot Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Parsed response candidate selection Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Parsed response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Final parsed text Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution finished Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Step context snapshot Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Parsed response candidate selection Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Parsed response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Final parsed text Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution finished Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Step context snapshot Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Parsed response candidate selection Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Parsed response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Final parsed text Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution finished Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Step context snapshot Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Parsed response candidate selection Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Parsed response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Final parsed text Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution finished Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Step context snapshot Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Parsed response candidate selection Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Parsed response Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Final parsed text Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Execution decision Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution finished Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage tool execution results Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Step context snapshot Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Request payload Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt start Object
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt response {attempt: 1, durationMs: 2770, status: 200, ok: true, retryable: false}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP response {status: 200, ok: true, contentType: 'application/json', rawLength: 747, rawPreview: '{"added_obj":null,"embedding_down":false,"message"…2e-42a3-9305-0b60b1b92679","vectors_down":false}\n', …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Parsed response candidate selection {selectedSource: 'root.tool_calls[0].text', selectedPreview: '{"path": "index.html", "startLine": 501, "endLine": 620}', selectedLength: 56, selectedIsTrivial: false, extractedToolCalls: 1, …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Parsed response {format: 'asksage', textLength: 0, textPreview: '', stopReason: 'tool_calls', toolCallCount: 1, …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Final parsed text {textLength: 0, textPreview: '', stopReason: 'tool_calls', toolCallCount: 1, toolCalls: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage execution decision {action: 'execute_tools', toolCallCount: 1, toolNames: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Execution decision {format: 'asksage', toolCallCount: 1, toolNames: Array(1), stopReason: 'tool_calls', textLength: 0}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution start {step: 15, name: 'readFile', args: {…}, readOnly: true, mutating: false}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution finished {step: 15, name: 'readFile', resultLength: 4358, resultPreview: '501|             newX = Math.random() * (canvas.wi…t);\n512| \n513|         // Draw Tactical Grid\n514|', mutationDetected: false}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Tool execution results {format: 'asksage', executed: 1, successfulMutations: 0, results: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage tool execution results {executed: 1, successfulMutations: 0, results: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Step context snapshot {step: 16, tokenEstimate: 35044, apiCallsSoFar: 15, noToolProgressTurns: 0, nudgeCount: 0, …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Request payload {step: 16, apiCall: 16, format: 'asksage', url: 'https://api.capra.flankspeed.us.navy.mil/server/query', model: 'google-claude-46-sonnet', …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Request payload {step: 16, apiCall: 16, url: 'https://api.capra.flankspeed.us.navy.mil/server/query', method: 'POST', model: 'google-claude-46-sonnet', …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt start {attempt: 1, maxRetries: 2, timeoutMs: 120000, url: 'https://api.capra.flankspeed.us.navy.mil/server/query', bodyKeys: Array(6), …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt response {attempt: 1, durationMs: 3399, status: 200, ok: true, retryable: false}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP response {status: 200, ok: true, contentType: 'application/json', rawLength: 764, rawPreview: '{"added_obj":null,"embedding_down":false,"message"…cd-4eaa-9288-4df8e77bd9f0","vectors_down":false}\n', …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Parsed response candidate selection {selectedSource: 'root.tool_calls[0].text', selectedPreview: '{"path": "index.html", "startLine": 355, "endLine": 500}', selectedLength: 56, selectedIsTrivial: false, extractedToolCalls: 1, …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Parsed response {format: 'asksage', textLength: 0, textPreview: '', stopReason: 'tool_calls', toolCallCount: 1, …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Final parsed text {textLength: 0, textPreview: '', stopReason: 'tool_calls', toolCallCount: 1, toolCalls: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage execution decision {action: 'execute_tools', toolCallCount: 1, toolNames: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Execution decision {format: 'asksage', toolCallCount: 1, toolNames: Array(1), stopReason: 'tool_calls', textLength: 0}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution start {step: 16, name: 'readFile', args: {…}, readOnly: true, mutating: false}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution finished {step: 16, name: 'readFile', resultLength: 5964, resultPreview: "355|             this.timer = 45; // Fall time\n356…    this.state = 'swimming';\n365|                ", mutationDetected: false}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Tool execution results {format: 'asksage', executed: 1, successfulMutations: 0, results: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage tool execution results {executed: 1, successfulMutations: 0, results: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Step context snapshot {step: 17, tokenEstimate: 36791, apiCallsSoFar: 16, noToolProgressTurns: 0, nudgeCount: 0, …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Request payload {step: 17, apiCall: 17, format: 'asksage', url: 'https://api.capra.flankspeed.us.navy.mil/server/query', model: 'google-claude-46-sonnet', …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Request payload {step: 17, apiCall: 17, url: 'https://api.capra.flankspeed.us.navy.mil/server/query', method: 'POST', model: 'google-claude-46-sonnet', …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt start {attempt: 1, maxRetries: 2, timeoutMs: 120000, url: 'https://api.capra.flankspeed.us.navy.mil/server/query', bodyKeys: Array(6), …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt response {attempt: 1, durationMs: 3673, status: 200, ok: true, retryable: false}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP response {status: 200, ok: true, contentType: 'application/json', rawLength: 784, rawPreview: '{"added_obj":null,"embedding_down":false,"message"…b6-401e-92f2-4157e9dcb16e","vectors_down":false}\n', …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Parsed response candidate selection {selectedSource: 'root.tool_calls[0].text', selectedPreview: '{"path": "index.html", "startLine": 1, "endLine": 165}', selectedLength: 54, selectedIsTrivial: false, extractedToolCalls: 1, …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Parsed response {format: 'asksage', textLength: 0, textPreview: '', stopReason: 'tool_calls', toolCallCount: 1, …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Final parsed text {textLength: 0, textPreview: '', stopReason: 'tool_calls', toolCallCount: 1, toolCalls: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage execution decision {action: 'execute_tools', toolCallCount: 1, toolNames: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Execution decision {format: 'asksage', toolCallCount: 1, toolNames: Array(1), stopReason: 'tool_calls', textLength: 0}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution start {step: 17, name: 'readFile', args: {…}, readOnly: true, mutating: false}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Tool execution finished {step: 17, name: 'readFile', resultLength: 6019, resultPreview: '1| <!DOCTYPE html>\n2| <html lang="en">\n3| <head>\n4…       user-select: none;\n15|         }\n16|      ', mutationDetected: false}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Tool execution results {format: 'asksage', executed: 1, successfulMutations: 0, results: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] AskSage tool execution results {executed: 1, successfulMutations: 0, results: Array(1)}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Step context snapshot {step: 18, tokenEstimate: 38511, apiCallsSoFar: 17, noToolProgressTurns: 0, nudgeCount: 0, …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] Request payload {step: 18, apiCall: 18, format: 'asksage', url: 'https://api.capra.flankspeed.us.navy.mil/server/query', model: 'google-claude-46-sonnet', …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] Request payload {step: 18, apiCall: 18, url: 'https://api.capra.flankspeed.us.navy.mil/server/query', method: 'POST', model: 'google-claude-46-sonnet', …}
+forge - 2026-03-24T175651.169.html:59189 [Prometheus] [CAPRA] HTTP attempt start {attempt: 1, maxRetries: 2, timeoutMs: 120000, url: 'https://api.capra.flankspeed.us.navy.mil/server/query', bodyKeys: Array(6), …}
