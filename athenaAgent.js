@@ -5563,10 +5563,105 @@ You are in PLAN MODE. The user wants to see what changes you would make WITHOUT 
         return template.innerHTML;
     },
 
+    _normalizeMarkdownForChat(text) {
+        const normalizeSegment = (segment) => {
+            return String(segment || '')
+                .replace(/\r\n?/g, '\n')
+                .split('\n')
+                .map(line => {
+                    const pipeCount = (line.match(/\|/g) || []).length;
+                    if (pipeCount >= 8 && /\|\s+\|(?:\s*:?-{3,}:?\s*\||\s*\d{1,3}\s*\|)/.test(line)) {
+                        line = line.replace(/\|\s+\|/g, '|\n|');
+                    }
+
+                    const numberedMarkers = line.match(/(?:^|\s)\d{1,2}\.\s+/g) || [];
+                    if (numberedMarkers.length >= 2) {
+                        line = line.replace(/^(.+?)\s+(\d{1,2}\.\s+)/, '$1\n\n$2');
+                        line = line.replace(/[ \t]+(\d{1,2}\.\s+)/g, '\n$1');
+                    }
+                    return line;
+                })
+                .join('\n');
+        };
+
+        const chunks = String(text || '').split(/(```[\s\S]*?```)/g);
+        return chunks.map(chunk => chunk.startsWith('```') ? chunk.replace(/\r\n?/g, '\n') : normalizeSegment(chunk)).join('');
+    },
+
+    _isMarkdownTableRow(line) {
+        const trimmed = String(line || '').trim();
+        return trimmed.startsWith('|') && trimmed.endsWith('|') && (trimmed.match(/\|/g) || []).length >= 3;
+    },
+
+    _isMarkdownTableSeparator(line) {
+        if (!this._isMarkdownTableRow(line)) return false;
+        const cells = String(line || '').trim().replace(/^\||\|$/g, '').split('|');
+        return cells.length > 0 && cells.every(cell => /^:?-{3,}:?$/.test(cell.trim()));
+    },
+
+    _splitMarkdownTableRow(line) {
+        return String(line || '').trim().replace(/^\||\|$/g, '').split('|').map(cell => cell.trim());
+    },
+
+    _renderMarkdownTableBlock(lines) {
+        if (!Array.isArray(lines) || lines.length < 2) return '';
+        const header = this._splitMarkdownTableRow(lines[0]);
+        const bodyRows = lines.slice(2).filter(line => this._isMarkdownTableRow(line)).map(line => this._splitMarkdownTableRow(line));
+        const cellCount = Math.max(header.length, ...bodyRows.map(row => row.length));
+        const pad = (row) => {
+            const out = row.slice(0, cellCount);
+            while (out.length < cellCount) out.push('');
+            return out;
+        };
+        const headHtml = pad(header).map(cell => '<th>' + cell + '</th>').join('');
+        const bodyHtml = bodyRows.map(row => '<tr>' + pad(row).map(cell => '<td>' + cell + '</td>').join('') + '</tr>').join('');
+        return '<div class="ai-markdown-table-wrap"><table class="ai-markdown-table"><thead><tr>' + headHtml + '</tr></thead><tbody>' + bodyHtml + '</tbody></table></div>';
+    },
+
+    _extractMarkdownTables(html, blocks) {
+        const lines = String(html || '').split('\n');
+        const out = [];
+        for (let i = 0; i < lines.length; i++) {
+            if (this._isMarkdownTableRow(lines[i]) && i + 1 < lines.length && this._isMarkdownTableSeparator(lines[i + 1])) {
+                const tableLines = [lines[i], lines[i + 1]];
+                i += 2;
+                while (i < lines.length && this._isMarkdownTableRow(lines[i])) {
+                    tableLines.push(lines[i]);
+                    i++;
+                }
+                i--;
+                const token = '%%FORGE_TABLE_' + blocks.length + '%%';
+                blocks.push({ token, html: this._renderMarkdownTableBlock(tableLines) });
+                out.push('', token, '');
+            } else {
+                out.push(lines[i]);
+            }
+        }
+        return out.join('\n');
+    },
+
+    _restoreMarkdownBlockTokens(html, blocks) {
+        let restored = String(html || '');
+        blocks.forEach(block => {
+            const tokenPattern = block.token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            restored = restored.replace(new RegExp('<p>\\s*' + tokenPattern + '\\s*</p>', 'g'), block.html);
+            restored = restored.replace(new RegExp(tokenPattern, 'g'), block.html);
+        });
+        return restored;
+    },
+
     _renderMarkdown(text) {
         if (!text) return '';
-        let html = escHtml(text);
-        html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => '<pre><code class="lang-' + (lang || 'text') + '">' + code + '</code></pre>');
+        const blocks = [];
+        let source = this._normalizeMarkdownForChat(text);
+        source = source.replace(/```([A-Za-z0-9_-]*)\n([\s\S]*?)```/g, (_, lang, code) => {
+            const token = '%%FORGE_CODE_' + blocks.length + '%%';
+            blocks.push({ token, html: '<pre><code class="lang-' + escHtml(lang || 'text') + '">' + escHtml(code) + '</code></pre>' });
+            return '\n\n' + token + '\n\n';
+        });
+
+        let html = escHtml(source);
+        html = this._extractMarkdownTables(html, blocks);
         html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>');
         html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
         html = html.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em>$1</em>');
@@ -5575,14 +5670,17 @@ You are in PLAN MODE. The user wants to see what changes you would make WITHOUT 
         html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
         html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
         html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
-        html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-        html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-        html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+        html = html.replace(/^[ \t]*[-*] (.+)$/gm, '<li data-list="ul">$1</li>');
+        html = html.replace(/^[ \t]*\d+\. (.+)$/gm, '<li data-list="ol">$1</li>');
+        html = html.replace(/((?:<li data-list="ul">.*<\/li>\n?)+)/g, match => '<ul>' + match.replace(/ data-list="ul"/g, '') + '</ul>');
+        html = html.replace(/((?:<li data-list="ol">.*<\/li>\n?)+)/g, match => '<ol>' + match.replace(/ data-list="ol"/g, '') + '</ol>');
+        html = html.replace(/\n{3,}/g, '\n\n');
         html = html.replace(/\n\n/g, '</p><p>');
         html = '<p>' + html + '</p>';
         html = html.replace(/<p>\s*<\/p>/g, '');
-        html = html.replace(/<p>\s*(<(?:pre|h[34]|ul|ol|blockquote|div))/g, '$1');
-        html = html.replace(/(<\/(?:pre|h[34]|ul|ol|blockquote|div)>)\s*<\/p>/g, '$1');
+        html = html.replace(/<p>\s*(<(?:pre|h[34]|ul|ol|blockquote|div|table))/g, '$1');
+        html = html.replace(/(<\/(?:pre|h[34]|ul|ol|blockquote|div|table)>)\s*<\/p>/g, '$1');
+        html = this._restoreMarkdownBlockTokens(html, blocks);
         return this._sanitizeRenderedHtml(html);
     },
 
