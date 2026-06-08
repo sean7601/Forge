@@ -641,6 +641,8 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         const raw = String(shipTarget || 'offline').trim().toLowerCase();
         if (raw === 'sharepoint' || raw === 'firepit-sharepoint') return 'sharepoint';
         if (raw === 'legacy-sharepoint' || raw === 'sharepoint-legacy' || raw === 'intelshare') return 'legacy-sharepoint';
+        if (raw === 'fusion-wiki-fullscreen' || raw === 'fusion-fullscreen' || raw === 'confluence-fullscreen' || raw === 'confluence-wiki-fullscreen') return 'fusion-wiki-fullscreen';
+        if (raw === 'fusion' || raw === 'fusion-wiki' || raw === 'confluence' || raw === 'confluence-wiki') return 'fusion-wiki';
         return 'offline';
     },
 
@@ -653,7 +655,37 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         const normalized = this.normalizeShipTarget(shipTarget);
         if (normalized === 'sharepoint') return 'SharePoint Firepit';
         if (normalized === 'legacy-sharepoint') return 'Legacy SharePoint';
+        if (normalized === 'fusion-wiki-fullscreen') return 'Fusion Wiki Fullscreen';
+        if (normalized === 'fusion-wiki') return 'Fusion Wiki';
         return 'Offline';
+    },
+
+    async copyTextToClipboard(text) {
+        const value = String(text || '');
+        if (!value) return false;
+        try {
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                await navigator.clipboard.writeText(value);
+                return true;
+            }
+        } catch (_) { }
+        try {
+            const textarea = document.createElement('textarea');
+            textarea.value = value;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            textarea.style.top = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            textarea.setSelectionRange(0, textarea.value.length);
+            const copied = document.execCommand('copy');
+            textarea.remove();
+            return !!copied;
+        } catch (_) {
+            return false;
+        }
     },
 
     getLatestReleaseForTarget(releases, shipTarget) {
@@ -853,7 +885,18 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         }
     },
 
-    async saveCompiledArtifactToShippedApps({ finalHtml, outName, hashHex, releaseType, shipTarget }) {
+    async saveCompiledArtifactToShippedApps({
+        finalHtml,
+        outName,
+        hashHex,
+        releaseType,
+        shipTarget,
+        copyToClipboard = false,
+        shipSavedModalTitle = '',
+        clipboardSuccessMessage = '',
+        clipboardFailureMessage = '',
+        deploymentInstructionsHtml = ''
+    }) {
         const normalizedReleaseType = this.getSelectedShipReleaseType(releaseType);
         const normalizedShipTarget = this.normalizeShipTarget(shipTarget);
         const versionInfo = await this.getNextShipVersionInfo(normalizedReleaseType);
@@ -903,33 +946,75 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         await metadataWritable.write(JSON.stringify(metadata, null, 2));
         await metadataWritable.close();
 
+        const clipboardCopied = copyToClipboard
+            ? await this.copyTextToClipboard(finalHtml)
+            : false;
+
         this.showShipSavedModal({
             outName: outputName,
             version: versionInfo.nextVersion,
             releaseType: normalizedReleaseType,
-            shipTarget: normalizedShipTarget
+            shipTarget: normalizedShipTarget,
+            title: shipSavedModalTitle,
+            clipboardCopied,
+            clipboardRequested: copyToClipboard,
+            clipboardSuccessMessage,
+            clipboardFailureMessage,
+            deploymentInstructionsHtml
         });
 
         return {
             outName: outputName,
             version: versionInfo.nextVersion,
-            shippedAt
+            shippedAt,
+            clipboardCopied
         };
     },
 
-    showShipSavedModal({ outName, version, releaseType, shipTarget }) {
+    showShipSavedModal({
+        outName,
+        version,
+        releaseType,
+        shipTarget,
+        title,
+        clipboardCopied = false,
+        clipboardRequested = false,
+        clipboardSuccessMessage = '',
+        clipboardFailureMessage = '',
+        deploymentInstructionsHtml = ''
+    }) {
         const modalEl = document.getElementById('ship-saved-modal');
         if (!modalEl || !window.bootstrap || !bootstrap.Modal) return;
         const rootName = String(loadFolder?.fileHandle?.name || '').trim() || 'your loaded app folder';
+        const titleEl = document.getElementById('ship-saved-modal-label');
         const pathEl = document.getElementById('ship-saved-modal-path');
         const fileEl = document.getElementById('ship-saved-modal-file');
+        const clipboardEl = document.getElementById('ship-saved-modal-clipboard');
+        const instructionsEl = document.getElementById('ship-saved-modal-instructions');
         const detailsEl = document.getElementById('ship-saved-modal-details');
         const targetLabel = this.getShipTargetLabel(shipTarget);
+        if (titleEl) {
+            titleEl.textContent = String(title || '').trim() || 'Shipped App Saved';
+        }
         if (pathEl) {
             pathEl.innerHTML = `Open your <code>${this.escapeHtml(rootName)}</code> folder, then open <code>${this.escapeHtml(this.shippedAppsFolderName)}</code>.`;
         }
         if (fileEl) {
             fileEl.innerHTML = `Saved file: <code>${this.escapeHtml(outName)}</code>`;
+        }
+        if (clipboardEl) {
+            if (clipboardRequested) {
+                const message = clipboardCopied
+                    ? (clipboardSuccessMessage || 'The shipped code has been copied to your clipboard.')
+                    : (clipboardFailureMessage || 'The shipped file was saved, but Forge could not copy it to your clipboard.');
+                const statusClass = clipboardCopied ? 'alert-success' : 'alert-warning';
+                clipboardEl.innerHTML = `<div class="alert ${statusClass} py-2 mb-3">${this.escapeHtml(message)}</div>`;
+            } else {
+                clipboardEl.innerHTML = '';
+            }
+        }
+        if (instructionsEl) {
+            instructionsEl.innerHTML = String(deploymentInstructionsHtml || '').trim();
         }
         if (detailsEl) {
             detailsEl.innerHTML = `Version <code>${this.escapeHtml(version)}</code> · ${this.escapeHtml(this.getShipReleaseTypeLabel(releaseType))} · ${this.escapeHtml(targetLabel)} target.<br>Forge does not show <code>${this.escapeHtml(this.shippedAppsFolderName)}</code> in the editor tree, so use your normal file browser to open that folder.`;
@@ -1874,6 +1959,13 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
             saveToShippedApps: false,
             shipReleaseType: 'feature',
             shipTarget: 'offline',
+            copyToClipboardAfterSave: false,
+            shipSavedModalTitle: '',
+            clipboardSuccessMessage: '',
+            clipboardFailureMessage: '',
+            deploymentInstructionsHtml: '',
+            fusionBridgeMode: false,
+            wrapFusionFullscreenIframe: false,
             ...options
         };
 
@@ -1993,15 +2085,26 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
 	            ...(allowGenAiMilApi ? ['api.genai.mil'] : [])
 	        ].join('\n'));
 	        const cdnConnectSrcAllowlist = allowCdnPulldowns ? parseConnectSrcAllowlist(cdnAllowlistRaw) : [];
+	        const normalizedShipTargetForCompile = this.normalizeShipTarget(opts.shipTarget);
+	        const useFusionBridgeMode = !!opts.fusionBridgeMode || !!opts.wrapFusionFullscreenIframe || normalizedShipTargetForCompile === 'fusion-wiki' || normalizedShipTargetForCompile === 'fusion-wiki-fullscreen';
+	        const useFusionFullscreenMode = !!opts.wrapFusionFullscreenIframe || normalizedShipTargetForCompile === 'fusion-wiki-fullscreen';
 	        // SharePoint/SPFx compat mode simply disables security headers
 	        if (sharePointCompatMode) {
 	            addSecurityHeaders = false;
+	        }
+	        if (useFusionBridgeMode) {
+	            addSecurityHeaders = true;
 	        }
 	        const useSharePointCompatMode = false;
 	        const useSharePointInlineEventRewrite = false;
 	        const sharePointOrigin = '';
 	        const sharePointSiteUrl = '';
-	        const connectSrcAllowlist = mergeUniqueAllowlist(apiConnectSrcAllowlist, cdnConnectSrcAllowlist);
+	        const fusionConnectSrcAllowlist = useFusionBridgeMode
+	            ? ["'self'", 'https://api.capra.flankspeed.us.navy.mil', 'https://chat.capra.flankspeed.us.navy.mil']
+	            : [];
+	        const connectSrcAllowlist = useFusionBridgeMode
+	            ? mergeUniqueAllowlist(fusionConnectSrcAllowlist)
+	            : mergeUniqueAllowlist(apiConnectSrcAllowlist, cdnConnectSrcAllowlist);
 
         // Simple stable string hash for matching during decompile
         const hashString = (str) => {
@@ -3238,6 +3341,7 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
 	                `    const SHAREPOINT_ORIGIN = ${JSON.stringify(useSharePointCompatMode ? sharePointOrigin : '')};`,
 	                `    const SHAREPOINT_SITE_URL = ${JSON.stringify(useSharePointCompatMode ? sharePointSiteUrl : '')};`,
 	                `    const SHAREPOINT_PARENT_PROXY = ${useSharePointCompatMode ? 'true' : 'false'};`,
+	                `    const CONFLUENCE_PARENT_PROXY = ${useFusionBridgeMode ? 'true' : 'false'};`,
 	                '    let networkPermissionState = NETWORK_PERMISSION_GUARD ? "unknown" : "granted";',
 	                '    let networkPermissionPromise = null;',
 	                '    let runtimeWarningHideTimer = null;',
@@ -3528,10 +3632,109 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
 	                '    }).catch(() => {});',
 	                '    try { delete window.__Forge_STORAGE_SEED__; } catch {}',
                 '    const normalizePattern = (value) => String(value || "").trim().toLowerCase().replace(/\\/$/, "");',
+                '    const getConfluenceBridgeBaseUrl = () => {',
+                '      if (!CONFLUENCE_PARENT_PROXY) return "";',
+                '      try {',
+                '        const ctx = window.__Forge_CONFLUENCE_CONTEXT__;',
+                '        if (ctx && typeof ctx.baseUrl === "string" && ctx.baseUrl) return ctx.baseUrl;',
+                '      } catch {}',
+                '      try {',
+                '        const meta = document.querySelector(\'meta[name="ajs-base-url"], meta[id="ajs-base-url"]\');',
+                '        const value = meta ? (meta.getAttribute("content") || meta.getAttribute("value") || "") : "";',
+                '        if (value) return value;',
+                '      } catch {}',
+                '      return "";',
+                '    };',
+                '    const installConfluenceApiShims = () => {',
+                '      if (!CONFLUENCE_PARENT_PROXY) return;',
+                '      const getCtx = () => {',
+                '        try { return window.__Forge_CONFLUENCE_CONTEXT__ || {}; } catch { return {}; }',
+                '      };',
+                '      const getMetaValue = (name) => {',
+                '        const ctx = getCtx();',
+                '        const key = String(name || "");',
+                '        const map = {',
+                '          "ajs-page-id": ctx.pageId || ctx.contentId || "",',
+                '          "ajs-content-id": ctx.contentId || ctx.pageId || "",',
+                '          "ajs-base-url": ctx.baseUrl || getConfluenceBridgeBaseUrl(),',
+                '          "ajs-remote-user": ctx.username || "",',
+                '          "ajs-current-user-fullname": ctx.username || "",',
+                '          "ajs-remote-user-key": ctx.userKey || "",',
+                '          "ajs-atl-token": ctx.token || "",',
+                '          "atlassian-token": ctx.token || ""',
+                '        };',
+                '        return map[key] || "";',
+                '      };',
+                '      try {',
+                '        const existingAjs = window.AJS && typeof window.AJS === "object" ? window.AJS : {};',
+                '        const existingMeta = existingAjs.Meta && typeof existingAjs.Meta === "object" ? existingAjs.Meta : {};',
+                '        existingAjs.Meta = Object.assign({}, existingMeta, { get: function(name) { return getMetaValue(name); } });',
+                '        window.AJS = existingAjs;',
+                '      } catch {}',
+                '      const requestViaFetch = async (request) => {',
+                '        const opts = typeof request === "string" ? { url: request } : Object.assign({}, request || {});',
+                '        const url = String(opts.url || opts.uri || "").trim();',
+                '        if (!url) throw new Error("AP.request missing url.");',
+                '        const baseUrl = getConfluenceBridgeBaseUrl();',
+                '        const resolved = /^https?:\\/\\//i.test(url) ? url : ((baseUrl || "") + (url.charAt(0) === "/" ? url : "/" + url));',
+                '        const method = String(opts.method || opts.type || "GET").toUpperCase();',
+                '        const headers = Object.assign({}, opts.headers || {});',
+                '        if (opts.contentType && !headers["Content-Type"] && !headers["content-type"]) headers["Content-Type"] = opts.contentType;',
+                '        if (!headers.Accept && !headers.accept) headers.Accept = "application/json";',
+                '        const init = { method: method, credentials: "same-origin", headers: headers };',
+                '        if (opts.data != null && method !== "GET" && method !== "HEAD") init.body = typeof opts.data === "string" ? opts.data : JSON.stringify(opts.data);',
+                '        const response = await window.fetch(resolved, init);',
+                '        const text = await response.text();',
+                '        if (!response.ok) {',
+                '          const err = new Error("Confluence request failed with HTTP " + response.status + ".");',
+                '          err.status = response.status;',
+                '          err.responseText = text;',
+                '          throw err;',
+                '        }',
+                '        return text;',
+                '      };',
+                '      const ap = window.AP && typeof window.AP === "object" ? window.AP : {};',
+                '      ap.request = function(options) {',
+                '        const promise = requestViaFetch(options);',
+                '        promise.then(function(text) {',
+                '          if (options && typeof options.success === "function") options.success(text);',
+                '        }).catch(function(error) {',
+                '          if (options && typeof options.error === "function") options.error(error);',
+                '        });',
+                '        return promise;',
+                '      };',
+                '      window.AP = ap;',
+                '      try {',
+                '        let currentAp = ap;',
+                '        const requestShim = ap.request;',
+                '        Object.defineProperty(window, "AP", {',
+                '          configurable: true,',
+                '          get: function() { return currentAp; },',
+                '          set: function(next) {',
+                '            currentAp = next && typeof next === "object" ? next : {};',
+                '            currentAp.request = requestShim;',
+                '          }',
+                '        });',
+                '      } catch {}',
+                '    };',
+                '    installConfluenceApiShims();',
                 '    const originMatchesPattern = (origin, pattern) => {',
                 '      const o = normalizePattern(origin);',
                 '      const p = normalizePattern(pattern);',
                 '      if (!o || !p) return false;',
+                '      if (p === "\'self\'" || p === "self") {',
+                '        if (CONFLUENCE_PARENT_PROXY) {',
+                '          try {',
+                '            const baseUrl = getConfluenceBridgeBaseUrl();',
+                '            if (baseUrl && o === normalizePattern(new URL(baseUrl, location.href).origin)) return true;',
+                '          } catch {}',
+                '        }',
+                '        try {',
+                '          return o === normalizePattern(new URL(location.href).origin);',
+                '        } catch {',
+                '          return false;',
+                '        }',
+                '      }',
                 '      if (o === p) return true;',
                 '      let protocol = "";',
                 '      let suffix = "";',
@@ -3592,6 +3795,21 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
 	                '      }',
 	                '    };',
 	                '    const canUseSharePointParentProxy = (value) => SHAREPOINT_PARENT_PROXY && isSharePointRequest(value);',
+	                '    const isConfluenceRequest = (value) => {',
+	                '      if (!CONFLUENCE_PARENT_PROXY) return false;',
+	                '      const raw = String(value || "").trim();',
+	                '      if (!raw) return false;',
+	                '      const baseUrl = getConfluenceBridgeBaseUrl();',
+	                '      if (!baseUrl) return raw.startsWith("/");',
+	                '      try {',
+	                '        const parsed = new URL(raw, baseUrl);',
+	                '        const base = new URL(baseUrl, location.href);',
+	                '        return normalizePattern(parsed.origin) === normalizePattern(base.origin);',
+	                '      } catch {',
+	                '        return raw.startsWith("/");',
+	                '      }',
+	                '    };',
+	                '    const canUseConfluenceParentProxy = (value) => CONFLUENCE_PARENT_PROXY && isConfluenceRequest(value);',
 	                '    const headersToEntries = (headersLike) => {',
 	                '      try {',
 	                '        if (!headersLike) return [];',
@@ -3654,6 +3872,7 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
 	                '    };',
 	                '    const ensureNetworkPermission = async (kind, urlValue) => {',
 	                '      if (isSharePointRequest(urlValue)) return true;',
+	                '      if (isConfluenceRequest(urlValue)) return true;',
 	                '      if (!NETWORK_PERMISSION_GUARD) return true;',
 	                '      if (networkPermissionState === "granted") return true;',
 	                '      if (networkPermissionState === "denied") throw makeBlockedNetworkError(kind, urlValue, "Outbound API permission denied by user.");',
@@ -3757,7 +3976,7 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
 	                '        const policy = getNetworkUrlPolicy(candidate);',
 	                '        if (policy.blockedReason) throw makeBlockedNetworkError("fetch", policy.normalized || candidate, policy.blockedReason);',
 	                '        if (policy.normalized) await ensureNetworkPermission("fetch", policy.normalized);',
-	                '        if (policy.normalized && canUseSharePointParentProxy(policy.normalized)) {',
+	                '        if (policy.normalized && (canUseSharePointParentProxy(policy.normalized) || canUseConfluenceParentProxy(policy.normalized))) {',
 	                '          const payload = await buildProxyFetchPayload(input, init, policy.normalized);',
 	                '          const proxyResult = await callParent("proxy_fetch", payload);',
 	                '          return buildProxyFetchResponse(proxyResult);',
@@ -4080,10 +4299,24 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
 	            const childHtmlB64 = encodeUtf8B64(childHtml);
 	            const extractedTitle = extractHtmlTitle(childHtml);
 	            const shellTitle = extractedTitle || 'Forge Isolated Runtime Shell';
-	            const childSandboxAttr = useSharePointCompatMode
+            const childSandboxAttr = (useSharePointCompatMode || useFusionBridgeMode)
 	                ? 'allow-scripts allow-forms allow-modals allow-downloads allow-same-origin allow-popups allow-popups-to-escape-sandbox'
 	                : 'allow-scripts allow-forms allow-modals allow-downloads';
             const childAllowAttr = 'clipboard-read *; clipboard-write *';
+	            const shellRootCss = useFusionFullscreenMode
+	                ? '    #forge-secure-shell-root { position: fixed; inset: 0; z-index: 2147483000; width: 100vw; max-width: 100vw; height: 100vh; height: 100dvh; min-height: 0; margin: 0; padding: 0; overflow: hidden; border: 0; background: #fff; }'
+	                : useFusionBridgeMode
+	                    ? '    #forge-secure-shell-root { width: 100%; max-width: 100%; height: 82vh; min-height: 720px; margin: 0; padding: 0; overflow: hidden; border: 0; background: #fff; }'
+	                    : '    #forge-secure-shell-root { width: 100%; height: 100%; }';
+	            const fusionFullscreenCss = useFusionFullscreenMode ? [
+	                '    body:has(#forge-secure-shell-root) #main-content, body.forge-fusion-confluence-fullscreen #main-content, body:has(#forge-secure-shell-root) .wiki-content, body.forge-fusion-confluence-fullscreen .wiki-content, body:has(#forge-secure-shell-root) .pageSection, body.forge-fusion-confluence-fullscreen .pageSection, body:has(#forge-secure-shell-root) .plugin_pagetree_children_content, body.forge-fusion-confluence-fullscreen .plugin_pagetree_children_content, body:has(#forge-secure-shell-root) .conf-macro, body.forge-fusion-confluence-fullscreen .conf-macro, body:has(#forge-secure-shell-root) .html-macro, body.forge-fusion-confluence-fullscreen .html-macro, body:has(#forge-secure-shell-root) .output-block { max-width: none !important; }',
+	                '    body:has(#forge-secure-shell-root) #main-content, body.forge-fusion-confluence-fullscreen #main-content, body:has(#forge-secure-shell-root) .wiki-content { padding-left: 0 !important; padding-right: 0 !important; }',
+	                '    html.forge-fusion-confluence-fullscreen, html.forge-fusion-confluence-fullscreen body, body.forge-fusion-confluence-fullscreen { overflow: hidden !important; }',
+	                '    body.forge-fusion-confluence-fullscreen .wiki-content, body.forge-fusion-confluence-fullscreen #content, body.forge-fusion-confluence-fullscreen #main { padding-left: 0 !important; padding-right: 0 !important; }',
+	                '    body.forge-fusion-confluence-fullscreen .ia-fixed-sidebar, body.forge-fusion-confluence-fullscreen .ia-splitter-left, body.forge-fusion-confluence-fullscreen .acs-side-bar { display: none !important; visibility: hidden !important; }',
+	                '    body.forge-fusion-confluence-fullscreen.theme-default .ia-splitter #main, body.forge-fusion-confluence-fullscreen .ia-splitter #main, body.forge-fusion-confluence-fullscreen #main { margin-left: 0 !important; width: 100% !important; }',
+	                '    body.forge-fusion-confluence-fullscreen #breadcrumb-section, body.forge-fusion-confluence-fullscreen #title-heading, body.forge-fusion-confluence-fullscreen #comments-section, body.forge-fusion-confluence-fullscreen #likes-section, body.forge-fusion-confluence-fullscreen #labels-section, body.forge-fusion-confluence-fullscreen #footer { display: none !important; }'
+	            ] : [];
 	            const parentScript = [
 	                '(function(){',
 	                '  try {',
@@ -4091,8 +4324,14 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
 	                `    const BRIDGE_TOKEN = ${JSON.stringify(bridgeToken)};`,
 	                `    const NETWORK_ALLOWLIST = ${JSON.stringify(connectSrcAllowlist)};`,
 	                `    const SHAREPOINT_SITE_URL = ${JSON.stringify(useSharePointCompatMode ? sharePointSiteUrl : '')};`,
+	                `    const CONFLUENCE_PARENT_PROXY = ${useFusionBridgeMode ? 'true' : 'false'};`,
+	                `    const FUSION_FULLSCREEN = ${useFusionFullscreenMode ? 'true' : 'false'};`,
 	                '    const frame = document.getElementById("forge-secure-app-frame");',
 	                '    if (!frame) return;',
+	                '    if (FUSION_FULLSCREEN) {',
+	                '      if (document.documentElement) document.documentElement.classList.add("forge-fusion-confluence-fullscreen");',
+	                '      if (document.body) document.body.classList.add("forge-fusion-confluence-fullscreen");',
+	                '    }',
                 '    try { frame.setAttribute("allow", "clipboard-read *; clipboard-write *"); } catch {}',
                 '    const gesturePanel = document.getElementById("forge-gesture-panel");',
                 '    const gestureMessage = document.getElementById("forge-gesture-message");',
@@ -4176,6 +4415,43 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
 	                '      if (!seed.webAbsoluteUrl) return htmlText;',
 	                '      const payload = JSON.stringify(seed).replace(/</g, "\\\\u003c");',
 	                '      const seedScript = buildInlineScriptTag("var _spPageContextInfo=Object.assign({},window._spPageContextInfo||{}, " + payload + ");window._spPageContextInfo=_spPageContextInfo;");',
+	                '      const headMatch = htmlText.match(/<head\\b[^>]*>/i);',
+	                '      if (headMatch) return htmlText.replace(headMatch[0], headMatch[0] + "\\n" + seedScript);',
+	                '      return "<!doctype html><html><head>" + seedScript + "</head><body>" + htmlText + "</body></html>";',
+	                '    };',
+	                '    const getConfluenceMetaValue = (name) => {',
+	                '      try {',
+	                '        if (window.AJS && window.AJS.Meta && typeof window.AJS.Meta.get === "function") {',
+	                '          const fromAjs = window.AJS.Meta.get(name);',
+	                '          if (fromAjs) return String(fromAjs);',
+	                '        }',
+	                '      } catch {}',
+	                '      try {',
+	                '        const escaped = String(name || "").replace(/"/g, "\\\\\\"");',
+	                '        const node = document.querySelector(\'meta[name="\' + escaped + \'"], meta[id="\' + escaped + \'"]\');',
+	                '        if (node) return String(node.getAttribute("content") || node.getAttribute("value") || "");',
+	                '      } catch {}',
+	                '      return "";',
+	                '    };',
+	                '    const getConfluenceContextSeed = () => {',
+	                '      if (!CONFLUENCE_PARENT_PROXY) return null;',
+	                '      return {',
+	                '        pageId: getConfluenceMetaValue("ajs-page-id") || getConfluenceMetaValue("ajs-content-id"),',
+	                '        contentId: getConfluenceMetaValue("ajs-content-id") || getConfluenceMetaValue("ajs-page-id"),',
+	                '        baseUrl: getConfluenceMetaValue("ajs-base-url") || location.origin,',
+	                '        username: getConfluenceMetaValue("ajs-remote-user") || getConfluenceMetaValue("ajs-current-user-fullname"),',
+	                '        userKey: getConfluenceMetaValue("ajs-remote-user-key"),',
+	                '        token: getConfluenceMetaValue("ajs-atl-token") || getConfluenceMetaValue("atlassian-token")',
+	                '      };',
+	                '    };',
+	                '    const injectConfluenceContextSeed = (htmlText) => {',
+	                '      const seed = getConfluenceContextSeed();',
+	                '      if (!seed) return htmlText;',
+	                '      const payload = JSON.stringify(seed).replace(/</g, "\\\\u003c");',
+	                '      const seedScript = buildInlineScriptTag(',
+	                '        "window.__Forge_CONFLUENCE_CONTEXT__=" + payload + ";" +',
+	                '        "(function(){var s=window.__Forge_CONFLUENCE_CONTEXT__||{};var map={\\"ajs-page-id\\":s.pageId,\\"ajs-content-id\\":s.contentId,\\"ajs-base-url\\":s.baseUrl,\\"ajs-remote-user\\":s.username,\\"ajs-current-user-fullname\\":s.username,\\"ajs-remote-user-key\\":s.userKey,\\"ajs-atl-token\\":s.token,\\"atlassian-token\\":s.token};Object.keys(map).forEach(function(name){var value=map[name];if(!value)return;var selector=\\\"meta[name=\\\\\\\"\\\"+name+\\\"\\\\\\\"],meta[id=\\\\\\\"\\\"+name+\\\"\\\\\\\"]\\\";if(document.querySelector(selector))return;var meta=document.createElement(\\\"meta\\\");meta.setAttribute(\\\"name\\\",name);meta.setAttribute(\\\"content\\\",String(value));(document.head||document.documentElement).appendChild(meta);});})();"',
+	                '      );',
 	                '      const headMatch = htmlText.match(/<head\\b[^>]*>/i);',
 	                '      if (headMatch) return htmlText.replace(headMatch[0], headMatch[0] + "\\n" + seedScript);',
 	                '      return "<!doctype html><html><head>" + seedScript + "</head><body>" + htmlText + "</body></html>";',
@@ -4730,23 +5006,19 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
                 '        return htmlText;',
                 '      }',
                 '    };',
-                '    const childHtmlWithSeed = injectSharePointContextSeed(injectStorageSeed(decodeB64Utf8(CHILD_HTML_B64)));',
+                '    const childHtmlWithSeed = injectConfluenceContextSeed(injectSharePointContextSeed(injectStorageSeed(decodeB64Utf8(CHILD_HTML_B64))));',
                 '    frame.srcdoc = propagateHostNonce(childHtmlWithSeed);',
                 '  } catch (error) {',
                 '    console.error("Forge parent bridge shell init failed:", error);',
                 '  }',
                 '})();'
             ].join('');
-            return [
-                '<!doctype html>',
-                '<html lang="en">',
-                '<head>',
-                '  <meta charset="utf-8">',
-                '  <meta name="viewport" content="width=device-width, initial-scale=1">',
-                `  <title>${escapeHtml(shellTitle)}</title>`,
+            const shellStyleLines = [
                 '  <style>',
-                '    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #fff; }',
-                '    #forge-secure-app-frame { width: 100%; height: 100%; border: 0; display: block; }',
+                ...(useFusionBridgeMode ? [] : ['    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #fff; }']),
+                shellRootCss,
+                '    #forge-secure-app-frame { width: 100%; height: 100%; border: 0; display: block; background: #fff; }',
+	                ...fusionFullscreenCss,
                 '    #forge-gesture-panel { position: fixed; inset: 0; background: rgba(8, 18, 28, 0.52); display: flex; align-items: center; justify-content: center; z-index: 999999; }',
                 '    #forge-gesture-panel[hidden] { display: none; }',
                 '    #forge-gesture-card { width: min(520px, calc(100vw - 24px)); background: #ffffff; border: 1px solid #c9d6e3; border-radius: 10px; padding: 14px; font-family: Segoe UI, Tahoma, Arial, sans-serif; color: #1b2734; }',
@@ -4756,10 +5028,12 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
                 '    #forge-gesture-continue, #forge-gesture-cancel { border: 0; border-radius: 8px; padding: 8px 12px; font-weight: 600; cursor: pointer; }',
                 '    #forge-gesture-continue { background: #0054a6; color: #fff; }',
                 '    #forge-gesture-cancel { background: #51687a; color: #fff; }',
-                '  </style>',
-                '</head>',
-                '<body>',
-	                `  <iframe id="forge-secure-app-frame" sandbox="${childSandboxAttr}" allow="${childAllowAttr}"></iframe>`,
+                '  </style>'
+            ];
+            const shellBodyLines = [
+	                '  <div id="forge-secure-shell-root">',
+	                `    <iframe id="forge-secure-app-frame" sandbox="${childSandboxAttr}" allow="${childAllowAttr}"></iframe>`,
+	                '  </div>',
                 '  <div id="forge-gesture-panel" hidden>',
                 '    <div id="forge-gesture-card">',
                 '      <h2>Action Requires Approval</h2>',
@@ -4770,7 +5044,27 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
                 '      </div>',
                 '    </div>',
                 '  </div>',
-                `  ${buildInlineScriptTag(parentScript)}`,
+                `  ${buildInlineScriptTag(parentScript)}`
+            ];
+            if (useFusionBridgeMode) {
+                return [
+                    '<div class="forge-fusion-bridge-macro">',
+                    ...shellStyleLines.map((line) => line.replace(/^  /, '')),
+                    ...shellBodyLines.map((line) => line.replace(/^  /, '')),
+                    '</div>'
+                ].join('\n');
+            }
+            return [
+                '<!doctype html>',
+                '<html lang="en">',
+                '<head>',
+                '  <meta charset="utf-8">',
+                '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+                `  <title>${escapeHtml(shellTitle)}</title>`,
+                ...shellStyleLines,
+                '</head>',
+                '<body>',
+                ...shellBodyLines,
                 '</body>',
                 '</html>'
             ].join('\n');
@@ -5048,6 +5342,10 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         if (opts.forceNoSecurityHeaders) {
             const suffix = normalizedShipTarget === 'legacy-sharepoint'
                 ? ' - Legacy Sharepoint'
+                : normalizedShipTarget === 'fusion-wiki'
+                    ? ' - Fusion Wiki'
+                    : normalizedShipTarget === 'fusion-wiki-fullscreen'
+                        ? ' - Fusion Wiki Fullscreen'
                 : ' - Only Secure in FS Sharepoint';
             const extMatch = rawName.match(/\.(?:html?|aspx)$/i);
             if (extMatch) {
@@ -5079,7 +5377,12 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
                     outName: baseOutName,
                     hashHex,
                     releaseType: opts.shipReleaseType,
-                    shipTarget: opts.shipTarget
+                    shipTarget: opts.shipTarget,
+                    copyToClipboard: opts.copyToClipboardAfterSave,
+                    shipSavedModalTitle: opts.shipSavedModalTitle,
+                    clipboardSuccessMessage: opts.clipboardSuccessMessage,
+                    clipboardFailureMessage: opts.clipboardFailureMessage,
+                    deploymentInstructionsHtml: opts.deploymentInstructionsHtml
                 });
                 outName = shipResult.outName;
             } catch (error) {

@@ -1,0 +1,909 @@
+<!--
+  Paste this whole file into a Confluence HTML macro.
+
+  Persistence model:
+  - Stores app data on the current Confluence page as a content property.
+  - Uses the logged-in Confluence session; no Firebase, Firestore, external API, or separate server.
+  - Users need permission to view and edit the page/content property.
+
+  Limits:
+  - This is basic shared persistence with polling and autosave, not Google Docs-style operational transforms.
+  - If two people type in the same document at the same time, the most recent save wins.
+-->
+<div id="firepitSharedDocs" class="fsd">
+  <header class="fsd-topbar">
+    <div class="fsd-brand">
+      <div class="fsd-mark">SD</div>
+      <div>
+        <h1>Shared Docs</h1>
+        <p>Confluence-backed workspace</p>
+      </div>
+    </div>
+    <div class="fsd-status" aria-live="polite">
+      <span id="fsdSyncDot" class="fsd-dot"></span>
+      <span id="fsdSyncStatus">Starting</span>
+    </div>
+  </header>
+
+  <div id="fsdWarning" class="fsd-warning" hidden></div>
+
+  <div class="fsd-layout">
+    <aside class="fsd-sidebar">
+      <section class="fsd-profile">
+        <label for="fsdDisplayName">Name shown to others</label>
+        <div class="fsd-name-row">
+          <input id="fsdDisplayName" class="fsd-input" autocomplete="name">
+          <button id="fsdSaveName" class="fsd-button fsd-secondary" type="button">Save</button>
+        </div>
+      </section>
+
+      <section class="fsd-tools">
+        <button id="fsdNewDoc" class="fsd-button" type="button">New doc</button>
+        <button id="fsdRefresh" class="fsd-button fsd-secondary" type="button">Refresh</button>
+      </section>
+
+      <nav id="fsdDocList" class="fsd-doc-list" aria-label="Shared documents"></nav>
+    </aside>
+
+    <main class="fsd-main">
+      <section class="fsd-editor-shell">
+        <div class="fsd-editor-header">
+          <input id="fsdDocTitle" class="fsd-title-input" placeholder="Untitled document">
+          <div id="fsdPresence" class="fsd-presence"></div>
+        </div>
+        <div id="fsdEditor" class="fsd-editor" contenteditable="true" data-placeholder="Start typing..."></div>
+      </section>
+      <footer class="fsd-footer">
+        <span id="fsdSaveState">No changes yet</span>
+        <span id="fsdLastUpdated">Not saved</span>
+      </footer>
+    </main>
+  </div>
+</div>
+
+<style>
+  #firepitSharedDocs {
+    --fsd-bg: #f6f7f9;
+    --fsd-panel: #ffffff;
+    --fsd-text: #17202a;
+    --fsd-muted: #64748b;
+    --fsd-line: #d9dee7;
+    --fsd-brand: #166a73;
+    --fsd-brand-strong: #0f4f58;
+    --fsd-accent: #f4b740;
+    --fsd-danger: #b42318;
+    --fsd-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+    min-height: 720px;
+    border: 1px solid var(--fsd-line);
+    border-radius: 8px;
+    background: var(--fsd-bg);
+    color: var(--fsd-text);
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  #firepitSharedDocs *,
+  #firepitSharedDocs *::before,
+  #firepitSharedDocs *::after {
+    box-sizing: border-box;
+  }
+
+  #firepitSharedDocs button,
+  #firepitSharedDocs input {
+    font: inherit;
+  }
+
+  #firepitSharedDocs button {
+    border: 0;
+    cursor: pointer;
+  }
+
+  .fsd-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 18px;
+    background: var(--fsd-panel);
+    border-bottom: 1px solid var(--fsd-line);
+  }
+
+  .fsd-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .fsd-mark {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: var(--fsd-brand);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .fsd-brand h1 {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  .fsd-brand p {
+    margin: 2px 0 0;
+    color: var(--fsd-muted);
+    font-size: 12px;
+  }
+
+  .fsd-status {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 9px;
+    min-width: 130px;
+    color: var(--fsd-muted);
+    font-size: 13px;
+  }
+
+  .fsd-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--fsd-accent);
+  }
+
+  .fsd-dot.fsd-online {
+    background: #15803d;
+  }
+
+  .fsd-warning {
+    margin: 14px 16px 0;
+    border: 1px solid #f0d28a;
+    border-radius: 8px;
+    padding: 11px 12px;
+    background: #fff8e1;
+    color: #5f4600;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .fsd-layout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    min-height: 640px;
+  }
+
+  .fsd-sidebar {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: #eef2f5;
+    border-right: 1px solid var(--fsd-line);
+  }
+
+  .fsd-profile {
+    padding: 16px;
+    border-bottom: 1px solid var(--fsd-line);
+  }
+
+  .fsd-profile label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--fsd-muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .fsd-name-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .fsd-input {
+    width: 100%;
+    min-height: 38px;
+    border: 1px solid var(--fsd-line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: #fff;
+    color: var(--fsd-text);
+    outline: none;
+  }
+
+  .fsd-input:focus,
+  .fsd-title-input:focus,
+  .fsd-editor:focus {
+    border-color: var(--fsd-brand);
+    box-shadow: 0 0 0 3px rgba(22, 106, 115, 0.12);
+  }
+
+  .fsd-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: var(--fsd-brand);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .fsd-button:hover {
+    background: var(--fsd-brand-strong);
+  }
+
+  .fsd-button.fsd-secondary {
+    background: #e2e8f0;
+    color: #1f2937;
+  }
+
+  .fsd-button.fsd-secondary:hover {
+    background: #cbd5e1;
+  }
+
+  .fsd-tools {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--fsd-line);
+  }
+
+  .fsd-doc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: auto;
+    padding: 12px;
+  }
+
+  .fsd-doc-item {
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 10px;
+    background: transparent;
+    color: var(--fsd-text);
+    text-align: left;
+  }
+
+  .fsd-doc-item:hover,
+  .fsd-doc-item.fsd-active {
+    border-color: var(--fsd-line);
+    background: var(--fsd-panel);
+  }
+
+  .fsd-doc-title {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+
+  .fsd-doc-meta {
+    display: block;
+    margin-top: 4px;
+    overflow: hidden;
+    color: var(--fsd-muted);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fsd-main {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-width: 0;
+    min-height: 0;
+    padding: 18px;
+  }
+
+  .fsd-editor-shell {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 0;
+    background: var(--fsd-panel);
+    border: 1px solid var(--fsd-line);
+    border-radius: 8px;
+    box-shadow: var(--fsd-shadow);
+  }
+
+  .fsd-editor-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--fsd-line);
+  }
+
+  .fsd-title-input {
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 5px 6px;
+    color: var(--fsd-text);
+    background: transparent;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.2;
+    outline: none;
+  }
+
+  .fsd-presence {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    max-width: 360px;
+  }
+
+  .fsd-pill {
+    border: 1px solid var(--fsd-line);
+    border-radius: 999px;
+    padding: 5px 8px;
+    background: #f8fafc;
+    color: var(--fsd-muted);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .fsd-editor {
+    min-height: 470px;
+    overflow: auto;
+    border: 1px solid transparent;
+    border-radius: 0 0 8px 8px;
+    padding: 22px;
+    background: #fff;
+    outline: none;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  .fsd-editor:empty::before {
+    content: attr(data-placeholder);
+    color: #94a3b8;
+  }
+
+  .fsd-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 2px 0;
+    color: var(--fsd-muted);
+    font-size: 12px;
+  }
+
+  @media (max-width: 820px) {
+    #firepitSharedDocs {
+      min-height: 780px;
+    }
+
+    .fsd-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .fsd-sidebar {
+      max-height: 280px;
+      border-right: 0;
+      border-bottom: 1px solid var(--fsd-line);
+    }
+
+    .fsd-main {
+      padding: 14px;
+    }
+
+    .fsd-editor-header {
+      grid-template-columns: 1fr;
+    }
+
+    .fsd-presence {
+      justify-content: flex-start;
+      max-width: none;
+    }
+
+    .fsd-title-input {
+      font-size: 23px;
+    }
+  }
+</style>
+
+<script>
+(function () {
+  "use strict";
+
+  var PROPERTY_KEY = "firepit-shared-docs-v1";
+  var POLL_MS = 2500;
+  var PRESENCE_MS = 30000;
+  var SAVE_DELAY_MS = 700;
+
+  var root = document.getElementById("firepitSharedDocs");
+  if (!root || root.dataset.ready === "true") return;
+  root.dataset.ready = "true";
+
+  var els = {
+    syncDot: document.getElementById("fsdSyncDot"),
+    syncStatus: document.getElementById("fsdSyncStatus"),
+    warning: document.getElementById("fsdWarning"),
+    displayName: document.getElementById("fsdDisplayName"),
+    saveName: document.getElementById("fsdSaveName"),
+    newDoc: document.getElementById("fsdNewDoc"),
+    refresh: document.getElementById("fsdRefresh"),
+    docList: document.getElementById("fsdDocList"),
+    docTitle: document.getElementById("fsdDocTitle"),
+    editor: document.getElementById("fsdEditor"),
+    presence: document.getElementById("fsdPresence"),
+    saveState: document.getElementById("fsdSaveState"),
+    lastUpdated: document.getElementById("fsdLastUpdated")
+  };
+
+  var context = getConfluenceContext();
+  var clientId = getClientId();
+  var user = {
+    id: context.userKey || context.username || clientId,
+    name: getStoredName() || context.username || "Confluence User"
+  };
+
+  var propertyVersion = 0;
+  var store = createEmptyStore();
+  var activeDocId = "";
+  var saveTimer = 0;
+  var pollTimer = 0;
+  var presenceTimer = 0;
+  var dirty = false;
+  var loading = false;
+
+  els.displayName.value = user.name;
+  els.saveName.addEventListener("click", saveDisplayName);
+  els.newDoc.addEventListener("click", createDocument);
+  els.refresh.addEventListener("click", function () { refreshFromConfluence(true); });
+  els.docTitle.addEventListener("input", queueSave);
+  els.editor.addEventListener("input", queueSave);
+
+  window.addEventListener("beforeunload", function () {
+    if (dirty) saveNow();
+  });
+
+  start();
+
+  async function start() {
+    if (!context.pageId) {
+      showWarning("This app must run inside a Confluence page HTML macro. It could not find the page id metadata.");
+      setSyncStatus("No page context", false);
+      setDisabled(true);
+      return;
+    }
+
+    try {
+      setSyncStatus("Connecting", false);
+      await refreshFromConfluence(false);
+      if (!store.docs.length) {
+        await createInitialDocument();
+      }
+      activeDocId = store.activeDocId || store.docs[0].id;
+      await touchPresence();
+      renderAll(false);
+      setSyncStatus("Live on Confluence", true);
+      pollTimer = window.setInterval(function () { refreshFromConfluence(false); }, POLL_MS);
+      presenceTimer = window.setInterval(touchPresence, PRESENCE_MS);
+    } catch (error) {
+      showWarning(error.message || String(error));
+      setSyncStatus("Confluence write failed", false);
+    }
+  }
+
+  async function refreshFromConfluence(forceRender) {
+    if (loading) return;
+    loading = true;
+    try {
+      var property = await getProperty();
+      if (!property) {
+        var created = await createProperty(createEmptyStore());
+        propertyVersion = created.version.number;
+        store = normalizeStore(created.value);
+      } else {
+        propertyVersion = property.version.number;
+        store = normalizeStore(property.value);
+      }
+      prunePresence();
+      if (!activeDocId && store.docs.length) activeDocId = store.activeDocId || store.docs[0].id;
+      if (forceRender || !dirty) renderAll(false);
+      setSyncStatus("Live on Confluence", true);
+    } catch (error) {
+      if (forceRender) showWarning(error.message || String(error));
+      setSyncStatus("Sync paused", false);
+    } finally {
+      loading = false;
+    }
+  }
+
+  async function createInitialDocument() {
+    var doc = {
+      id: makeId("doc"),
+      title: "Team notes",
+      body: "Type here. Other people on this Confluence page will see saved changes after the next sync.",
+      updatedAt: Date.now(),
+      updatedBy: user.name
+    };
+    await mutateStore(function (latest) {
+      if (!latest.docs.length) {
+        latest.docs = [doc];
+        latest.activeDocId = doc.id;
+      }
+      activeDocId = latest.activeDocId || latest.docs[0].id;
+    });
+  }
+
+  async function createDocument() {
+    var doc = {
+      id: makeId("doc"),
+      title: "New document",
+      body: "",
+      updatedAt: Date.now(),
+      updatedBy: user.name
+    };
+    activeDocId = doc.id;
+    await mutateStore(function (latest) {
+      doc.title = "New document " + (latest.docs.length + 1);
+      latest.docs.unshift(doc);
+      latest.activeDocId = doc.id;
+      latest.people[user.id] = currentPresence();
+    });
+    dirty = false;
+    renderAll(false);
+    setSaveState("Created");
+  }
+
+  function queueSave() {
+    dirty = true;
+    setSaveState("Saving...");
+    window.clearTimeout(saveTimer);
+    saveTimer = window.setTimeout(saveNow, SAVE_DELAY_MS);
+  }
+
+  async function saveNow() {
+    if (!activeDocId) return;
+    window.clearTimeout(saveTimer);
+    var title = els.docTitle.value.trim() || "Untitled document";
+    var body = els.editor.textContent;
+
+    try {
+      await mutateStore(function (latest) {
+        var doc = latest.docs.filter(function (item) { return item.id === activeDocId; })[0];
+        if (!doc) {
+          doc = { id: activeDocId };
+          latest.docs.unshift(doc);
+        }
+        doc.title = title;
+        doc.body = body;
+        doc.updatedAt = Date.now();
+        doc.updatedBy = user.name;
+        latest.activeDocId = activeDocId;
+        latest.people[user.id] = currentPresence();
+      });
+      dirty = false;
+      renderAll(true);
+      setSaveState("Saved");
+    } catch (error) {
+      setSaveState("Save failed");
+      showWarning(error.message || String(error));
+    }
+  }
+
+  async function mutateStore(mutator) {
+    var lastError = null;
+    for (var attempt = 0; attempt < 4; attempt += 1) {
+      try {
+        var property = await getWritableProperty();
+        var latest = normalizeStore(property.value);
+        propertyVersion = property.version.number;
+        mutator(latest);
+        prunePresenceFrom(latest);
+        latest.updatedAt = Date.now();
+        latest.updatedBy = user.name;
+        var updated = await updateProperty(latest, propertyVersion + 1);
+        propertyVersion = updated.version.number;
+        store = normalizeStore(updated.value);
+        return store;
+      } catch (error) {
+        lastError = error;
+        if (error.status !== 409) throw error;
+      }
+    }
+    throw lastError || new Error("Could not save after several Confluence version conflicts.");
+  }
+
+  async function touchPresence(writeImmediately) {
+    store.people[user.id] = currentPresence();
+    prunePresence();
+    if (writeImmediately === false) return;
+    try {
+      await mutateStore(function (latest) {
+        latest.people[user.id] = currentPresence();
+      });
+      renderPresence();
+    } catch (_) {
+      setSyncStatus("Presence delayed", false);
+    }
+  }
+
+  function saveDisplayName() {
+    user.name = els.displayName.value.trim() || user.name;
+    try {
+      window.localStorage.setItem("firepit-shared-docs-name", user.name);
+    } catch (_) {}
+    touchPresence(true);
+    setSaveState("Name saved");
+  }
+
+  function renderAll(keepEditorText) {
+    renderDocList();
+    renderEditor(keepEditorText);
+    renderPresence();
+  }
+
+  function renderDocList() {
+    els.docList.innerHTML = "";
+    store.docs.forEach(function (doc) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "fsd-doc-item" + (doc.id === activeDocId ? " fsd-active" : "");
+      button.innerHTML = '<span class="fsd-doc-title"></span><span class="fsd-doc-meta"></span>';
+      button.querySelector(".fsd-doc-title").textContent = doc.title || "Untitled document";
+      button.querySelector(".fsd-doc-meta").textContent = doc.updatedBy
+        ? "Edited by " + doc.updatedBy
+        : "Ready";
+      button.addEventListener("click", function () {
+        if (dirty && !window.confirm("Switch documents before the current save finishes?")) return;
+        activeDocId = doc.id;
+        store.activeDocId = doc.id;
+        dirty = false;
+        touchPresence(true);
+        renderAll(false);
+      });
+      els.docList.appendChild(button);
+    });
+  }
+
+  function renderEditor(keepEditorText) {
+    var doc = findDoc(activeDocId);
+    if (!doc) return;
+    if (!keepEditorText) {
+      els.docTitle.value = doc.title || "";
+    }
+    if (!keepEditorText) {
+      els.editor.textContent = doc.body || "";
+    }
+    els.lastUpdated.textContent = doc.updatedAt
+      ? "Saved " + formatTime(doc.updatedAt)
+      : "Not saved";
+  }
+
+  function renderPresence() {
+    var activePeople = Object.keys(store.people)
+      .map(function (key) { return store.people[key]; })
+      .filter(function (person) { return !person.docId || person.docId === activeDocId; })
+      .sort(function (a, b) { return b.lastSeen - a.lastSeen; });
+
+    els.presence.innerHTML = "";
+    activePeople.slice(0, 8).forEach(function (person) {
+      var pill = document.createElement("span");
+      pill.className = "fsd-pill";
+      pill.textContent = person.name || "Someone";
+      els.presence.appendChild(pill);
+    });
+  }
+
+  function findDoc(docId) {
+    return store.docs.filter(function (doc) { return doc.id === docId; })[0];
+  }
+
+  function prunePresence() {
+    prunePresenceFrom(store);
+  }
+
+  function prunePresenceFrom(targetStore) {
+    var cutoff = Date.now() - 90000;
+    Object.keys(targetStore.people || {}).forEach(function (key) {
+      if (!targetStore.people[key].lastSeen || targetStore.people[key].lastSeen < cutoff) {
+        delete targetStore.people[key];
+      }
+    });
+  }
+
+  function currentPresence() {
+    return {
+      id: user.id,
+      name: user.name,
+      docId: activeDocId || store.activeDocId || "",
+      lastSeen: Date.now()
+    };
+  }
+
+  async function getWritableProperty() {
+    var property = await getProperty();
+    if (property) return property;
+
+    try {
+      return await createProperty(createEmptyStore());
+    } catch (error) {
+      if (error.status !== 409) throw error;
+      property = await getProperty();
+      if (property) return property;
+      throw error;
+    }
+  }
+
+  async function getProperty() {
+    var response = await confluenceFetch("/rest/api/content/" + encodeURIComponent(context.pageId) + "/property/" + encodeURIComponent(PROPERTY_KEY));
+    if (response.status === 404) return null;
+    return parseJsonResponse(response);
+  }
+
+  async function createProperty(value) {
+    var response = await confluenceFetch("/rest/api/content/" + encodeURIComponent(context.pageId) + "/property", {
+      method: "POST",
+      body: JSON.stringify({
+        key: PROPERTY_KEY,
+        value: value
+      })
+    });
+    return parseJsonResponse(response);
+  }
+
+  async function updateProperty(value, nextVersion) {
+    var response = await confluenceFetch("/rest/api/content/" + encodeURIComponent(context.pageId) + "/property/" + encodeURIComponent(PROPERTY_KEY), {
+      method: "PUT",
+      body: JSON.stringify({
+        value: value,
+        version: {
+          number: nextVersion
+        }
+      })
+    });
+    return parseJsonResponse(response);
+  }
+
+  async function confluenceFetch(path, options) {
+    options = options || {};
+    var response = await window.fetch(context.baseUrl + path, {
+      method: options.method || "GET",
+      credentials: "same-origin",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-Atlassian-Token": "no-check"
+      },
+      body: options.body
+    });
+    return response;
+  }
+
+  async function parseJsonResponse(response) {
+    if (!response.ok) {
+      var detail = "";
+      try {
+        detail = await response.text();
+      } catch (_) {}
+      var message = "Confluence returned HTTP " + response.status + ".";
+      if (response.status === 401 || response.status === 403) {
+        message += " The current user may not have permission to write page content properties.";
+      }
+      if (detail) message += " " + detail.slice(0, 180);
+      var error = new Error(message);
+      error.status = response.status;
+      throw error;
+    }
+    return response.json();
+  }
+
+  function getConfluenceContext() {
+    return {
+      pageId: meta("ajs-page-id") || meta("ajs-content-id"),
+      baseUrl: meta("ajs-base-url") || window.location.origin,
+      username: meta("ajs-remote-user") || meta("ajs-current-user-fullname"),
+      userKey: meta("ajs-remote-user-key"),
+      token: meta("ajs-atl-token") || meta("atlassian-token")
+    };
+  }
+
+  function meta(name) {
+    var fromAjs = "";
+    try {
+      if (window.AJS && window.AJS.Meta && typeof window.AJS.Meta.get === "function") {
+        fromAjs = window.AJS.Meta.get(name) || "";
+      }
+    } catch (_) {}
+    var node = document.querySelector('meta[name="' + cssEscape(name) + '"], meta[id="' + cssEscape(name) + '"]');
+    return fromAjs || (node ? node.getAttribute("content") || node.getAttribute("value") || "" : "");
+  }
+
+  function cssEscape(value) {
+    if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(value);
+    return String(value).replace(/"/g, '\\"');
+  }
+
+  function createEmptyStore() {
+    return {
+      schema: 1,
+      activeDocId: "",
+      updatedAt: Date.now(),
+      updatedBy: "",
+      docs: [],
+      people: {}
+    };
+  }
+
+  function normalizeStore(value) {
+    var next = value && typeof value === "object" ? value : createEmptyStore();
+    next.schema = 1;
+    next.docs = Array.isArray(next.docs) ? next.docs : [];
+    next.people = next.people && typeof next.people === "object" ? next.people : {};
+    return next;
+  }
+
+  function setSyncStatus(text, online) {
+    els.syncStatus.textContent = text;
+    els.syncDot.className = "fsd-dot" + (online ? " fsd-online" : "");
+  }
+
+  function setSaveState(text) {
+    els.saveState.textContent = text;
+  }
+
+  function showWarning(message) {
+    els.warning.hidden = false;
+    els.warning.textContent = message;
+  }
+
+  function setDisabled(disabled) {
+    [els.displayName, els.saveName, els.newDoc, els.refresh, els.docTitle, els.editor].forEach(function (node) {
+      if (!node) return;
+      if (node === els.editor) node.setAttribute("contenteditable", disabled ? "false" : "true");
+      else node.disabled = disabled;
+    });
+  }
+
+  function makeId(prefix) {
+    return prefix + "-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  }
+
+  function getClientId() {
+    var key = "firepit-shared-docs-client-id";
+    try {
+      var existing = window.localStorage.getItem(key);
+      if (existing) return existing;
+      var id = makeId("client");
+      window.localStorage.setItem(key, id);
+      return id;
+    } catch (_) {
+      return makeId("client");
+    }
+  }
+
+  function getStoredName() {
+    try {
+      return window.localStorage.getItem("firepit-shared-docs-name") || "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function formatTime(value) {
+    return new Intl.DateTimeFormat(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+      month: "short",
+      day: "numeric"
+    }).format(new Date(value));
+  }
+})();
+</script>

@@ -1249,11 +1249,13 @@ body {
             color: #7dd3fc;
         }
 
-        #sharepoint-guide-modal .modal-dialog {
+        #sharepoint-guide-modal .modal-dialog,
+        #fusion-guide-modal .modal-dialog {
             max-width: 1120px;
         }
 
-        #sharepoint-guide-modal .modal-content {
+        #sharepoint-guide-modal .modal-content,
+        #fusion-guide-modal .modal-content {
             background: #161e27;
             border: 1px solid #232e3b;
             color: #dce3eb;
@@ -1261,15 +1263,19 @@ body {
         }
 
         #sharepoint-guide-modal .modal-header,
-        #sharepoint-guide-modal .modal-footer {
+        #sharepoint-guide-modal .modal-footer,
+        #fusion-guide-modal .modal-header,
+        #fusion-guide-modal .modal-footer {
             border-color: #232e3b;
         }
 
-        #sharepoint-guide-modal .modal-title {
+        #sharepoint-guide-modal .modal-title,
+        #fusion-guide-modal .modal-title {
             color: #fbbf24;
         }
 
-        #sharepoint-guide-modal .btn-close {
+        #sharepoint-guide-modal .btn-close,
+        #fusion-guide-modal .btn-close {
             filter: invert(1);
         }
 
@@ -2505,6 +2511,11 @@ body {
                                 data-bs-toggle="modal" data-bs-target="#sharepoint-guide-modal">
                                 SharePoint Deploy Guide
                             </button>
+                            <button id="resources-fusion-guide-item" class="dropdown-item" type="button"
+                                title="Open Fusion Deployment Guide" aria-label="Open Fusion Deployment Guide"
+                                data-bs-toggle="modal" data-bs-target="#fusion-guide-modal">
+                                Fusion Deployment Guide
+                            </button>
                             <button id="resources-ai-help-item" class="dropdown-item" type="button"
                                 title="Get AI Help" aria-label="Get AI Help"
                                 data-bs-toggle="modal" data-bs-target="#ai-help-modal">
@@ -3003,6 +3014,14 @@ https://cdn.plot.ly
                             </tr>
                             <tr>
                                 <td>
+                                    <strong>Fusion Wiki Integration</strong>
+                                    <div class="feature-step">Step 19</div>
+                                </td>
+                                <td>Adds Confluence page content-property persistence for single-file HTML apps deployed in a Confluence HTML macro. Use this when the app should run inside a Fusion wiki page and share data through the current user's Confluence session without Firebase, SharePoint lists, external APIs, or a separate server.</td>
+                                <td><button class="btn btn-sm btn-primary" data-advanced-incorporate-step="19">Incorporate</button></td>
+                            </tr>
+                            <tr>
+                                <td>
                                     <strong>Ask Sage API Integration</strong>
                                     <div class="feature-step">Step 12</div>
                                 </td>
@@ -3145,6 +3164,7 @@ https://cdn.plot.ly
                         <button class="pl-feature-item" data-incorporate-step="10">LLM JSON Pipeline</button>
                         <button class="pl-feature-item" data-incorporate-step="11">SharePoint List Integration</button>
                         <button class="pl-feature-item" data-incorporate-step="18">SharePoint Live Polling (after list integration)</button>
+                        <button class="pl-feature-item" data-incorporate-step="19">Fusion Wiki Integration</button>
                         <button class="pl-feature-item" data-incorporate-step="12">Ask Sage API Integration</button>
                         <button class="pl-feature-item" data-incorporate-step="13">GenAI.mil API Integration</button>
                         <button class="pl-feature-item" data-incorporate-step="14">Leaflet Map</button>
@@ -3488,6 +3508,14 @@ https://cdn.plot.ly
                             <strong class="d-block mb-1">Ship for SharePoint</strong>
                             <small>No security headers. Produces a clean HTML file compatible with SharePoint/SPFx hosting.</small>
                         </button>
+                        <button id="ship-fusion-wiki-btn" type="button" class="btn btn-outline-info text-start p-3" style="border-radius: 8px;">
+                            <strong class="d-block mb-1">Ship for Fusion Wiki</strong>
+                            <small>Saves a clean HTML file and copies the shipped code to your clipboard for the Fusion HTML macro.</small>
+                        </button>
+                        <button id="ship-fusion-wiki-fullscreen-btn" type="button" class="btn btn-outline-info text-start p-3" style="border-radius: 8px;">
+                            <strong class="d-block mb-1">Ship for Fusion Wiki Fullscreen</strong>
+                            <small>Wraps the app in a fullscreen iframe and restricts network access to Fusion's host URL and CAPRA.</small>
+                        </button>
                         <button id="ship-legacy-sharepoint-btn" type="button" class="btn btn-outline-info text-start p-3" style="border-radius: 8px;">
                             <strong class="d-block mb-1">Ship for Legacy IntelShare</strong>
                             <small>No security headers. Produces a clean <code>.aspx</code> page for direct upload to <code>SitePages</code>.</small>
@@ -3512,6 +3540,8 @@ https://cdn.plot.ly
                         <div id="ship-saved-modal-path" class="mb-2"><code>Shipped Apps</code></div>
                         <div id="ship-saved-modal-file" class="small text-muted"></div>
                     </div>
+                    <div id="ship-saved-modal-clipboard"></div>
+                    <div id="ship-saved-modal-instructions"></div>
                     <div id="ship-saved-modal-details" class="small text-muted"></div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
@@ -4081,6 +4111,48 @@ https://cdn.plot.ly
         </div>
     </div>
 
+    <div class="modal fade" id="fusion-guide-modal" tabindex="-1"
+        aria-labelledby="fusion-guide-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fusion-guide-modal-label">Fusion Deployment Guide</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="sharepoint-guide-card">
+                        <div class="sharepoint-guide-kicker">Fusion Wiki HTML Macro</div>
+                        <p class="mb-0">Use <strong>Ship for Fusion Wiki</strong> from the Ship modal. Forge saves the shipped HTML file in <code>Shipped Apps</code> and copies the exact shipped code to your clipboard so you can paste it directly into Fusion.</p>
+                    </div>
+                    <div class="sharepoint-guide-card">
+                        <h6>Deployment Steps</h6>
+                        <ol class="mb-0">
+                            <li>Create a space in Fusion.</li>
+                            <li>Press <strong>Create</strong> at the top to create a page.</li>
+                            <li>Press the <strong>+</strong> sign.</li>
+                            <li>Select <strong>Other macros</strong>.</li>
+                            <li>Search for <strong>html</strong>.</li>
+                            <li>Select <strong>HTML</strong>.</li>
+                            <li>Press <strong>Insert</strong>.</li>
+                            <li>Paste the copied shipped code into the HTML area.</li>
+                        </ol>
+                    </div>
+                    <div class="sharepoint-guide-card">
+                        <h6>Updating A Fusion Page</h6>
+                        <p class="mb-0">Ship for Fusion Wiki again, return to the Fusion page, edit the HTML macro, replace the old code with the newly copied shipped code, and publish the page.</p>
+                    </div>
+                    <div class="sharepoint-guide-card">
+                        <h6>Fullscreen Iframe Option</h6>
+                        <p class="mb-0">Use <strong>Ship for Fusion Wiki Fullscreen</strong> when the app should take over the page. Forge wraps the shipped app in a fullscreen iframe, hides common Confluence page chrome, and adds a child Content Security Policy that allows network connections only to the current Fusion host URL and CAPRA.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade prometheus-setup-modal" id="prometheus-setup-modal" tabindex="-1" aria-labelledby="prometheus-setup-modal-label" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
@@ -4237,7 +4309,7 @@ https://cdn.plot.ly
 
 ### Plan
 - **Plan**: JTBD interview prompt for discovering the real job, pain points, and constraints before building.
-- **Prompt Lab Feature Add**: feature-specific prompt generators and integration wizards (data import/export, OCR, docs, integrations, maps, Shared JSON Live Database, etc.).
+- **Prompt Lab Feature Add**: feature-specific prompt generators and integration wizards (data import/export, OCR, docs, SharePoint, Confluence, maps, Shared JSON Live Database, etc.).
 - Strongly recommend concrete mission workflow context before generating prompts.
 
 ### Test
@@ -5011,6 +5083,13 @@ Now answer the user's Forge question with exact steps and rationale.</textarea>
                     placeholder: 'Example: The app already reads and writes tasks from a SharePoint list. Add lightweight polling so status changes from other users appear in the task board and detail pane without reload.',
                     defaultContext: '[existing SharePoint-backed code flow, current state/update behavior, and where remote updates should appear in the UI]'
                 },
+                19: {
+                    title: 'Fusion Wiki Integration',
+                    description: 'Generate a prompt to add Confluence page content-property persistence to a single-file HTML app deployed in a Confluence HTML macro.',
+                    contextLabel: 'Describe the app state to persist and any Confluence hosting details',
+                    placeholder: 'Example: Persist team notes, filters, and selected doc id on the current Fusion Confluence page. Add basic polling so other page viewers see saved changes.',
+                    defaultContext: '[app state to persist, desired sync behavior, and Fusion wiki hosting details]'
+                },
                 12: {
                     title: 'Ask Sage API Integration',
                     description: 'Generate a prompt to add Ask Sage API calls using the CAPRA or Army tenant endpoint patterns.',
@@ -5732,6 +5811,71 @@ Now answer the user's Forge question with exact steps and rationale.</textarea>
 	                    saveToShippedApps: true,
                         shipTarget: 'sharepoint',
                         shipReleaseType: compiler.getSelectedShipReleaseType()
+	                });
+	            });
+	            $('#ship-fusion-wiki-btn').on('click', () => {
+	                bootstrap.Modal.getInstance(document.getElementById('ship-choice-modal'))?.hide();
+	                compiler.startCompilation({
+	                    forceInlineCdnChecked: true,
+	                    forceNoSecurityHeaders: true,
+	                    navigateToCompilerOnWarning: false,
+	                    navigateToCompilerOnMissing: false,
+	                    saveToShippedApps: true,
+                        shipTarget: 'fusion-wiki',
+                        shipReleaseType: compiler.getSelectedShipReleaseType(),
+                        copyToClipboardAfterSave: true,
+                        fusionBridgeMode: true,
+                        shipSavedModalTitle: 'Fusion Wiki Code Copied',
+                        clipboardSuccessMessage: 'The shipped code has been copied to your clipboard. Paste it into the Fusion HTML macro.',
+                        clipboardFailureMessage: 'The shipped file was saved, but Forge could not copy it automatically. Open the saved file in Shipped Apps and copy the full HTML before pasting into Fusion.',
+                        deploymentInstructionsHtml: `
+                            <div class="p-3 mb-3" style="background:#102032; border:1px solid #2563eb; border-radius:10px;">
+                                <div class="small text-uppercase text-info mb-2" style="letter-spacing:0.04em;">Paste Into Fusion</div>
+                                <ol class="mb-0">
+                                    <li>Create a space.</li>
+                                    <li>Press <strong>Create</strong> at the top to create a page.</li>
+                                    <li>Press the <strong>+</strong> sign.</li>
+                                    <li>Select <strong>Other macros</strong>.</li>
+                                    <li>Search for <strong>html</strong>.</li>
+                                    <li>Select <strong>HTML</strong>.</li>
+                                    <li>Press <strong>Insert</strong>.</li>
+                                    <li>Paste the copied code into the HTML area.</li>
+                                </ol>
+                            </div>
+                        `
+	                });
+	            });
+	            $('#ship-fusion-wiki-fullscreen-btn').on('click', () => {
+	                bootstrap.Modal.getInstance(document.getElementById('ship-choice-modal'))?.hide();
+	                compiler.startCompilation({
+	                    forceInlineCdnChecked: true,
+	                    forceNoSecurityHeaders: true,
+	                    navigateToCompilerOnWarning: false,
+	                    navigateToCompilerOnMissing: false,
+	                    saveToShippedApps: true,
+                        shipTarget: 'fusion-wiki-fullscreen',
+                        shipReleaseType: compiler.getSelectedShipReleaseType(),
+                        copyToClipboardAfterSave: true,
+                        wrapFusionFullscreenIframe: true,
+                        shipSavedModalTitle: 'Fusion Fullscreen Code Copied',
+                        clipboardSuccessMessage: 'The fullscreen iframe-wrapped shipped code has been copied to your clipboard. Paste it into the Fusion HTML macro.',
+                        clipboardFailureMessage: 'The fullscreen shipped file was saved, but Forge could not copy it automatically. Open the saved file in Shipped Apps and copy the full HTML before pasting into Fusion.',
+                        deploymentInstructionsHtml: `
+                            <div class="p-3 mb-3" style="background:#102032; border:1px solid #2563eb; border-radius:10px;">
+                                <div class="small text-uppercase text-info mb-2" style="letter-spacing:0.04em;">Paste Fullscreen Wrapper Into Fusion</div>
+                                <p class="mb-2">This version uses Forge's isolated iframe bridge. Its child Content Security Policy allows connections only to the same Fusion host and CAPRA.</p>
+                                <ol class="mb-0">
+                                    <li>Create a space.</li>
+                                    <li>Press <strong>Create</strong> at the top to create a page.</li>
+                                    <li>Press the <strong>+</strong> sign.</li>
+                                    <li>Select <strong>Other macros</strong>.</li>
+                                    <li>Search for <strong>html</strong>.</li>
+                                    <li>Select <strong>HTML</strong>.</li>
+                                    <li>Press <strong>Insert</strong>.</li>
+                                    <li>Paste the copied fullscreen wrapper code into the HTML area.</li>
+                                </ol>
+                            </div>
+                        `
 	                });
 	            });
 	            $('#ship-legacy-sharepoint-btn').on('click', () => {

@@ -656,6 +656,111 @@ Please provide:
 
 NOTE: If you do not already have my app code, ask me to share it first before writing code.`,
 
+        // STEP 19: Fusion Wiki Integration
+        19: `Add Fusion wiki app persistence to my existing single-file HTML/JavaScript app. The app will be pasted into a Confluence HTML macro on a Navy Fusion wiki page, such as Fusion, and should share data through the current logged-in Confluence session.
+
+App-specific state / Confluence hosting details:
+{context}
+
+Use the following as the implementation brief whenever you integrate this app with Confluence.
+
+Confluence Content Property Persistence
+=======================================
+
+Deployment model
+----------------
+- Keep the app as one deployable HTML file with inline HTML, CSS, and JavaScript.
+- Do not require Firebase, Firestore, SharePoint lists, external servers, build steps, modules, CDNs, browser extensions, or separate API keys.
+- The app runs inside a Confluence page HTML macro and uses the logged-in Confluence session.
+- Use \`fetch(..., { credentials: "same-origin" })\` for Confluence REST calls.
+- Store shared app state on the current Confluence page as a Confluence content property.
+- Users need permission to view and edit the page/content property.
+- If the app is opened outside Confluence or from \`file://\`, disable Confluence write features and show a clear message instead of throwing errors.
+
+Confluence context discovery
+----------------------------
+- Discover context from \`window.AJS.Meta.get(...)\` when available.
+- Also support fallback lookup from page \`meta\` tags by \`name\` or \`id\`.
+- Required context values:
+  - page id: \`ajs-page-id\` or \`ajs-content-id\`
+  - base URL: \`ajs-base-url\` or \`window.location.origin\`
+  - current user: \`ajs-remote-user\`, \`ajs-current-user-fullname\`, and/or \`ajs-remote-user-key\`
+- Add these helpers:
+  - \`getConfluenceContext()\`
+  - \`meta(name)\`
+  - \`cssEscape(value)\`
+
+Content property API
+--------------------
+- Use one unique namespaced \`PROPERTY_KEY\` for this app, for example \`<app-name>-state-v1\`.
+- Do not reuse generic keys from another app.
+- Implement these helpers:
+  - \`confluenceFetch(path, options)\`
+  - \`parseJsonResponse(response)\`
+  - \`getProperty()\`
+  - \`createProperty(value)\`
+  - \`updateProperty(value, nextVersion)\`
+  - \`getWritableProperty()\`
+  - \`mutateStore(mutator)\`
+  - \`createEmptyStore()\`
+  - \`normalizeStore(value)\`
+- Use these REST paths:
+  - \`GET /rest/api/content/{pageId}/property/{PROPERTY_KEY}\`
+  - \`POST /rest/api/content/{pageId}/property\`
+  - \`PUT /rest/api/content/{pageId}/property/{PROPERTY_KEY}\`
+- On updates, include \`version: { number: currentVersion + 1 }\`.
+- On HTTP 409 version conflicts, re-read the latest property, reapply the mutation, and retry several times.
+- On HTTP 401 or 403, show that the current user may not have permission to write Confluence page content properties.
+
+State model
+-----------
+- Adapt the app's existing state model into a persisted store with:
+  - \`schema\`
+  - \`updatedAt\`
+  - \`updatedBy\`
+  - app-specific data collections
+  - optional \`people\` for presence
+- Normalize missing, malformed, or older stored values defensively.
+- Keep app-specific migrations small and explicit if the current state shape needs to change.
+- Avoid unsafe HTML injection for user data. Prefer \`textContent\`; only use \`innerHTML\` for static trusted templates.
+
+Sync behavior
+-------------
+- Add basic shared sync with polling, not operational transforms.
+- Poll Confluence every 2-3 seconds by default.
+- Debounce user saves by roughly 500-800 ms.
+- Do not overwrite local unsaved user edits during polling.
+- Keep conflict handling simple: the most recent successful save can win unless the existing app has a stronger conflict model.
+- Show unobtrusive sync status such as \`Connecting\`, \`Live on Confluence\`, \`Saving...\`, \`Saved\`, \`Sync paused\`, or \`Save failed\`.
+- Guard against double initialization with a root \`dataset.ready\` check.
+- Use \`beforeunload\` to attempt a final save when there are unsaved changes.
+
+Optional presence
+-----------------
+- If useful for this app, add lightweight presence:
+  - stable local client id in \`localStorage\`
+  - display name in \`localStorage\`
+  - active users stored under \`store.people\`
+  - update presence about every 30 seconds
+  - prune stale presence older than about 90 seconds
+- Do not present this as real-time collaborative editing. It is simple page-backed shared state.
+
+Compatibility requirements
+--------------------------
+- Namespace all DOM ids, CSS classes, localStorage keys, and constants to avoid collisions with Confluence and other macros.
+- Buttons added by this feature should use \`type="button"\`.
+- Use \`addEventListener\` handlers rather than inline event attributes.
+- Keep existing UI behavior unchanged except for the persistence, sync, status, and setup/error surfaces needed for Confluence-backed operation.
+- If the original app already has local JSON import/export, localStorage, or in-memory state, preserve those features unless they conflict with Confluence sync.
+
+Please provide:
+1. The COMPLETE file content for every changed file. Do NOT provide snippets.
+2. A short explanation of the Confluence content-property data flow.
+3. The chosen \`PROPERTY_KEY\`, store schema, polling interval, and save debounce values.
+4. Any manual Confluence setup or permission requirements.
+
+NOTE: If you do not already have my app code, ask me to share it first before writing code.`,
+
         // STEP 12: Ask Sage API Integration
         12: `Add Ask Sage API integration to my existing offline HTML/JavaScript app.
 
