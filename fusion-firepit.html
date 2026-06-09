@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confluence HTML File Renderer</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #17202a;
+      --muted: #5f6b7a;
+      --border: #d7dce3;
+      --accent: #0c66e4;
+      --accent-dark: #093f91;
+      --danger: #b42318;
+      --ok: #067647;
+      --shadow: 0 12px 30px rgba(23, 32, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .app {
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 10px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .bar {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    input[type="url"],
+    input[type="text"] {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #fff;
+      font: inherit;
+    }
+
+    input[type="url"]:focus,
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      outline: 3px solid rgba(12, 102, 228, 0.18);
+    }
+
+    button {
+      height: 42px;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      padding: 0 14px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      font: 700 14px Arial, Helvetica, sans-serif;
+      white-space: nowrap;
+    }
+
+    button.secondary {
+      background: #fff;
+      color: var(--accent-dark);
+      border-color: var(--border);
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    .settings {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+      width: 100%;
+      margin: 8px auto 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .settings label {
+      display: inline-flex;
+      gap: 7px;
+      align-items: center;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 400;
+      text-transform: none;
+    }
+
+    main {
+      width: 100%;
+      margin: 0 auto;
+      padding: 8px 10px 10px;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 8px;
+    }
+
+    .status {
+      min-height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--panel);
+      padding: 9px 12px;
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .status.error {
+      border-color: rgba(180, 35, 24, 0.35);
+      color: var(--danger);
+      background: #fff4f2;
+    }
+
+    .status.ok {
+      border-color: rgba(6, 118, 71, 0.3);
+      color: var(--ok);
+      background: #f3fcf7;
+    }
+
+    .frame-wrap {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--panel);
+      overflow: hidden;
+      min-height: 620px;
+      height: calc(100vh - 116px);
+    }
+
+    body.app-page-view {
+      overflow: hidden;
+      background: #fff;
+    }
+
+    body.app-page-view .app {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      width: 100vw;
+      max-width: none;
+      height: 100vh;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+
+    body.app-page-view header,
+    body.app-page-view .status {
+      display: none;
+    }
+
+    body.app-page-view main {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      padding: 0;
+      margin: 0;
+      background: #fff;
+    }
+
+    body.app-page-view .frame-wrap {
+      position: fixed;
+      inset: 0;
+      border: 0;
+      border-radius: 0;
+      width: 100vw;
+      height: 100vh;
+      min-height: 100vh;
+      background: #fff;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    @media (max-width: 760px) {
+      header {
+        position: static;
+      }
+
+      .bar {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .frame-wrap {
+        height: calc(100vh - 280px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="forge-fusion-firepit-renderer" class="app">
+    <header>
+      <div class="bar">
+        <div>
+          <label for="sourceUrl">HTML file link</label>
+          <input id="sourceUrl" type="url" placeholder="Paste a Confluence attachment or download link to an .html file">
+        </div>
+        <button id="renderButton" type="button">Render App</button>
+        <button id="directButton" class="secondary" type="button">Open Raw</button>
+      </div>
+      <div class="settings">
+        <label><input id="sandboxFrame" type="checkbox"> Sandbox iframe</label>
+        <label><input id="sameOrigin" type="checkbox" checked> Allow same-origin iframe scripts</label>
+        <label><input id="unloadShim" type="checkbox" checked> Map blocked unload events</label>
+        <label><input id="saveLink" type="checkbox" checked> Save link in page properties</label>
+      </div>
+    </header>
+
+    <main>
+      <div id="status" class="status">Paste an HTML attachment link, then render it.</div>
+      <div id="frameWrap" class="frame-wrap">
+        <iframe
+          id="preview"
+          title="Rendered HTML preview"
+          allow="unload; fullscreen; clipboard-read; clipboard-write; encrypted-media; web-share"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const sourceInput = document.getElementById('sourceUrl');
+    const renderButton = document.getElementById('renderButton');
+    const directButton = document.getElementById('directButton');
+    const sandboxInput = document.getElementById('sandboxFrame');
+    const sameOriginInput = document.getElementById('sameOrigin');
+    const unloadShimInput = document.getElementById('unloadShim');
+    const saveLinkInput = document.getElementById('saveLink');
+    const statusBox = document.getElementById('status');
+    const frameWrap = document.getElementById('frameWrap');
+    const preview = document.getElementById('preview');
+    const appRoot = document.getElementById('forge-fusion-firepit-renderer');
+    const pageViewStyle = {
+      body: '',
+      app: '',
+      main: '',
+      frameWrap: '',
+      preview: ''
+    };
+    let appOriginalParent = appRoot ? appRoot.parentNode : null;
+    let appOriginalNextSibling = appRoot ? appRoot.nextSibling : null;
+    let currentObjectUrl = '';
+
+    const RENDERER_PROPERTY_KEY = 'confluence-html-renderer-source-url-v1';
+    const RENDERER_DEFAULT_FULLSCREEN = true;
+
+    function setStatus(message, state) {
+      statusBox.textContent = message;
+      statusBox.className = 'status' + (state ? ' ' + state : '');
+    }
+
+    function setBusy(isBusy) {
+      renderButton.disabled = isBusy;
+      directButton.disabled = isBusy;
+    }
+
+    function enterPageView() {
+      if (appRoot && document.body && appRoot.parentNode !== document.body) {
+        appOriginalParent = appRoot.parentNode;
+        appOriginalNextSibling = appRoot.nextSibling;
+        document.body.appendChild(appRoot);
+      }
+      const main = appRoot ? appRoot.querySelector('main') : null;
+      pageViewStyle.body = document.body ? document.body.getAttribute('style') || '' : '';
+      pageViewStyle.app = appRoot ? appRoot.getAttribute('style') || '' : '';
+      pageViewStyle.main = main ? main.getAttribute('style') || '' : '';
+      pageViewStyle.frameWrap = frameWrap ? frameWrap.getAttribute('style') || '' : '';
+      pageViewStyle.preview = preview ? preview.getAttribute('style') || '' : '';
+      if (document.body) {
+        document.body.style.overflow = 'hidden';
+      }
+      if (appRoot) {
+        appRoot.style.cssText = 'position:fixed!important;inset:0!important;z-index:2147483647!important;width:100vw!important;height:100vh!important;max-width:none!important;min-height:100vh!important;margin:0!important;padding:0!important;background:#fff!important;display:block!important;';
+      }
+      if (main) {
+        main.style.cssText = 'position:fixed!important;inset:0!important;z-index:2147483647!important;display:block!important;width:100vw!important;height:100vh!important;margin:0!important;padding:0!important;background:#fff!important;';
+      }
+      if (frameWrap) {
+        frameWrap.style.cssText = 'position:fixed!important;inset:0!important;border:0!important;border-radius:0!important;width:100vw!important;height:100vh!important;min-height:100vh!important;margin:0!important;padding:0!important;background:#fff!important;overflow:hidden!important;';
+      }
+      if (preview) {
+        preview.style.cssText = 'display:block!important;width:100%!important;height:100%!important;border:0!important;background:#fff!important;';
+      }
+      document.body.classList.add('app-page-view');
+      return true;
+    }
+
+    function exitPageView() {
+      document.body.classList.remove('app-page-view');
+      const main = appRoot ? appRoot.querySelector('main') : null;
+      if (document.body) document.body.setAttribute('style', pageViewStyle.body);
+      if (appRoot) appRoot.setAttribute('style', pageViewStyle.app);
+      if (main) main.setAttribute('style', pageViewStyle.main);
+      if (frameWrap) frameWrap.setAttribute('style', pageViewStyle.frameWrap);
+      if (preview) preview.setAttribute('style', pageViewStyle.preview);
+      if (appRoot && appOriginalParent && appRoot.parentNode === document.body) {
+        appOriginalParent.insertBefore(appRoot, appOriginalNextSibling);
+      }
+    }
+
+    function isFullscreenMode() {
+      return !!RENDERER_DEFAULT_FULLSCREEN;
+    }
+
+    function updateSandbox() {
+      if (!sandboxInput.checked) {
+        preview.removeAttribute('sandbox');
+        sameOriginInput.disabled = true;
+        return;
+      }
+
+      sameOriginInput.disabled = false;
+      const permissions = [
+        'allow-scripts',
+        'allow-forms',
+        'allow-modals',
+        'allow-popups',
+        'allow-downloads',
+        'allow-top-navigation-by-user-activation'
+      ];
+
+      if (sameOriginInput.checked) {
+        permissions.push('allow-same-origin');
+      }
+
+      preview.setAttribute('sandbox', permissions.join(' '));
+    }
+
+    function getConfluenceBaseUrl(url) {
+      const parts = url.pathname.split('/').filter(Boolean);
+      const appSegmentIndex = parts.findIndex((part) => {
+        return ['spaces', 'pages', 'display', 'download', 'rest'].includes(part);
+      });
+
+      if (appSegmentIndex <= 0) {
+        return url.origin;
+      }
+
+      return url.origin + '/' + parts.slice(0, appSegmentIndex).join('/');
+    }
+
+    function encodePathPart(part) {
+      return encodeURIComponent(part).replace(/%2F/g, '/');
+    }
+
+    function parseConfluencePreview(url) {
+      const preview = url.searchParams.get('preview');
+      if (!preview) {
+        return null;
+      }
+
+      const previewParts = preview.split('/').filter(Boolean);
+      if (previewParts.length < 3) {
+        return null;
+      }
+
+      return {
+        rawPreview: preview,
+        pageId: previewParts[0],
+        attachmentId: previewParts[1],
+        fileName: previewParts.slice(2).join('/')
+      };
+    }
+
+    function parseConfluenceDownload(url) {
+      const match = url.pathname.match(/\/download\/attachments\/([^/]+)\/(.+)$/i);
+      if (!match) {
+        return null;
+      }
+
+      return {
+        pageId: decodeURIComponent(match[1]),
+        attachmentId: url.searchParams.get('attachmentId') || '',
+        fileName: decodeURIComponent(match[2])
+      };
+    }
+
+    function readMeta(name) {
+      const tag = document.querySelector('meta[name="' + name.replace(/"/g, '\\"') + '"]');
+      if (tag) {
+        return tag.getAttribute('content') || '';
+      }
+
+      if (window.AJS && window.AJS.Meta && typeof window.AJS.Meta.get === 'function') {
+        try {
+          return window.AJS.Meta.get(name) || '';
+        } catch (error) {}
+      }
+
+      return '';
+    }
+
+    function getRendererPageId() {
+      return readMeta('ajs-page-id') || readMeta('ajs-content-id');
+    }
+
+    function getRendererBaseUrl() {
+      return readMeta('ajs-base-url') || readMeta('confluence-base-url') || window.location.origin;
+    }
+
+    function getInitialUrlFromAddressBar() {
+      const params = new URLSearchParams(window.location.search);
+      const hashUrl = window.location.hash.startsWith('#url=')
+        ? decodeURIComponent(window.location.hash.slice(5))
+        : '';
+
+      return params.get('url') || hashUrl;
+    }
+
+    function removeInitialUrlFromAddressBar() {
+      const next = new URL(window.location.href);
+      let changed = false;
+
+      if (next.searchParams.has('url')) {
+        next.searchParams.delete('url');
+        changed = true;
+      }
+
+      if (next.hash.startsWith('#url=')) {
+        next.hash = '';
+        changed = true;
+      }
+
+      if (changed) {
+        window.history.replaceState({}, '', next.href);
+      }
+    }
+
+    async function fetchJson(url, options = {}) {
+      const response = await fetch(url, {
+        ...options,
+        credentials: 'same-origin',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Atlassian-Token': 'no-check',
+          ...(options.headers || {})
+        }
+      });
+
+      const text = await response.text();
+      let value = null;
+
+      if (text) {
+        try {
+          value = JSON.parse(text);
+        } catch (error) {
+          throw new Error('Confluence returned non-JSON content for ' + url + '.');
+        }
+      }
+
+      if (!response.ok) {
+        const message = value && value.message ? value.message : response.statusText;
+        const error = new Error('Confluence property request failed with HTTP ' + response.status + ': ' + message);
+        error.status = response.status;
+        throw error;
+      }
+
+      return value;
+    }
+
+    async function getRendererProperty() {
+      const pageId = getRendererPageId();
+      if (!pageId) {
+        return null;
+      }
+
+      const baseUrl = getRendererBaseUrl().replace(/\/$/, '');
+      const propertyUrl = baseUrl + '/rest/api/content/' + encodeURIComponent(pageId) + '/property/' + encodeURIComponent(RENDERER_PROPERTY_KEY) + '?expand=version';
+
+      try {
+        return await fetchJson(propertyUrl, { method: 'GET' });
+      } catch (error) {
+        if (error.status === 404) {
+          return null;
+        }
+
+        throw error;
+      }
+    }
+
+    async function saveRendererSourceUrl(sourceUrl) {
+      if (!saveLinkInput.checked) {
+        return;
+      }
+
+      const pageId = getRendererPageId();
+      if (!pageId) {
+        setStatus('Rendered, but this page has no Confluence page id meta tag, so the source link was not saved.', 'error');
+        return;
+      }
+
+      const baseUrl = getRendererBaseUrl().replace(/\/$/, '');
+      const propertyBaseUrl = baseUrl + '/rest/api/content/' + encodeURIComponent(pageId) + '/property';
+      const existing = await getRendererProperty();
+      const value = {
+        sourceUrl: sourceUrl.href,
+        updatedAt: new Date().toISOString()
+      };
+
+      if (existing) {
+        await fetchJson(propertyBaseUrl + '/' + encodeURIComponent(RENDERER_PROPERTY_KEY), {
+          method: 'PUT',
+          body: JSON.stringify({
+            value,
+            version: {
+              number: existing.version.number + 1
+            }
+          })
+        });
+        return;
+      }
+
+      await fetchJson(propertyBaseUrl, {
+        method: 'POST',
+        body: JSON.stringify({
+          key: RENDERER_PROPERTY_KEY,
+          value
+        })
+      });
+    }
+
+    async function loadSavedSourceUrl() {
+      const initialUrl = getInitialUrlFromAddressBar();
+      if (initialUrl && initialUrl !== 'null') {
+        sourceInput.value = initialUrl;
+        removeInitialUrlFromAddressBar();
+        return true;
+      }
+
+      try {
+        const prop = await getRendererProperty();
+        const savedUrl = prop && prop.value && prop.value.sourceUrl;
+        if (savedUrl) {
+          sourceInput.value = savedUrl;
+          return true;
+        }
+      } catch (error) {
+        setStatus(error.message, 'error');
+      }
+
+      return false;
+    }
+
+    function escapeAttribute(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function getInjectedMetaTags(originalUrl, sourceUrl) {
+      const originalPreview = parseConfluencePreview(originalUrl);
+      const originalDownload = parseConfluenceDownload(originalUrl);
+      const sourceDownload = parseConfluenceDownload(sourceUrl);
+      const pageId = (originalPreview && originalPreview.pageId) ||
+        (originalDownload && originalDownload.pageId) ||
+        (sourceDownload && sourceDownload.pageId) ||
+        readMeta('ajs-page-id') ||
+        readMeta('ajs-content-id');
+      const baseUrl = getConfluenceBaseUrl(originalUrl || sourceUrl);
+      const metaValues = {
+        'ajs-page-id': pageId,
+        'ajs-content-id': pageId,
+        'ajs-base-url': baseUrl,
+        'ajs-remote-user': readMeta('ajs-remote-user'),
+        'ajs-current-user-fullname': readMeta('ajs-current-user-fullname'),
+        'ajs-remote-user-key': readMeta('ajs-remote-user-key')
+      };
+
+      return Object.keys(metaValues)
+        .filter((name) => metaValues[name])
+        .map((name) => '<meta name="' + name + '" content="' + escapeAttribute(metaValues[name]) + '">')
+        .join('');
+    }
+
+    function normalizeConfluenceUrl(rawValue) {
+      const value = rawValue.trim();
+      if (!value) {
+        throw new Error('Paste a link to an HTML file first.');
+      }
+
+      const url = new URL(value, window.location.href);
+
+      if (/\/pages\/viewpageattachments\.action$/i.test(url.pathname)) {
+        throw new Error('That is the attachment list page. Copy the link for the actual .html attachment or its download action.');
+      }
+
+      url.hash = '';
+      return url;
+    }
+
+    function uniqueUrls(urls) {
+      const seen = new Set();
+      return urls.filter((url) => {
+        if (seen.has(url.href)) {
+          return false;
+        }
+
+        seen.add(url.href);
+        return true;
+      });
+    }
+
+    async function getRestAttachmentDownloadUrl(pageUrl, previewInfo) {
+      const baseUrl = getConfluenceBaseUrl(pageUrl);
+      const restUrl = new URL(baseUrl + '/rest/api/content/' + encodeURIComponent(previewInfo.attachmentId));
+      restUrl.searchParams.set('expand', '_links');
+
+      const response = await fetch(restUrl.href, {
+        credentials: 'include',
+        cache: 'no-store'
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const attachment = await response.json();
+      const downloadPath = attachment && attachment._links && attachment._links.download;
+      if (!downloadPath) {
+        return null;
+      }
+
+      return new URL(downloadPath, baseUrl);
+    }
+
+    async function getRenderableUrls(rawValue) {
+      const url = normalizeConfluenceUrl(rawValue);
+      const previewInfo = parseConfluencePreview(url);
+
+      if (!previewInfo) {
+        return [url];
+      }
+
+      const baseUrl = getConfluenceBaseUrl(url);
+      const downloadById = new URL(baseUrl + '/download/attachments/' + encodeURIComponent(previewInfo.pageId) + '/' + encodePathPart(previewInfo.fileName));
+      downloadById.searchParams.set('attachmentId', previewInfo.attachmentId);
+
+      const downloadByName = new URL(baseUrl + '/download/attachments/' + encodeURIComponent(previewInfo.pageId) + '/' + encodePathPart(previewInfo.fileName));
+      const downloadWithPreview = new URL(downloadByName.href);
+      downloadWithPreview.searchParams.set('preview', previewInfo.rawPreview);
+
+      const urls = [downloadById, downloadByName, downloadWithPreview];
+      try {
+        const restDownloadUrl = await getRestAttachmentDownloadUrl(url, previewInfo);
+        if (restDownloadUrl) {
+          urls.unshift(restDownloadUrl);
+        }
+      } catch (error) {
+        // Some Confluence instances block this REST call. The direct download patterns below still often work.
+      }
+
+      return uniqueUrls(urls);
+    }
+
+    async function rememberUrl(url) {
+      try {
+        await saveRendererSourceUrl(url);
+      } catch (error) {
+        setStatus('Rendering anyway, but the source link could not be saved: ' + error.message, 'error');
+      }
+    }
+
+    function getUnloadShimScript() {
+      return '<script>' +
+        '(function(){' +
+        'var nativeAdd=EventTarget.prototype.addEventListener;' +
+        'var nativeRemove=EventTarget.prototype.removeEventListener;' +
+        'var mapped=new WeakMap();' +
+        'function mapType(type){return type==="unload"?"pagehide":type;}' +
+        'EventTarget.prototype.addEventListener=function(type,listener,options){' +
+        'if(type==="unload"&&typeof listener==="function"){' +
+        'var wrapped=function(event){return listener.call(this,event);};' +
+        'mapped.set(listener,wrapped);' +
+        'return nativeAdd.call(this,"pagehide",wrapped,options);' +
+        '}' +
+        'return nativeAdd.call(this,mapType(type),listener,options);' +
+        '};' +
+        'EventTarget.prototype.removeEventListener=function(type,listener,options){' +
+        'return nativeRemove.call(this,mapType(type),mapped.get(listener)||listener,options);' +
+        '};' +
+        'try{' +
+        'var onunloadHandler=null;' +
+        'Object.defineProperty(window,"onunload",{' +
+        'configurable:true,' +
+        'get:function(){return onunloadHandler;},' +
+        'set:function(handler){' +
+        'if(onunloadHandler){window.removeEventListener("pagehide",onunloadHandler);}' +
+        'onunloadHandler=typeof handler==="function"?handler:null;' +
+        'if(onunloadHandler){window.addEventListener("pagehide",onunloadHandler);}' +
+        '}' +
+        '});' +
+        '}catch(error){}' +
+        '})();' +
+        '<' + '/script>';
+    }
+
+    function cleanHtmlContent(html) {
+      return String(html || '')
+        .replace(/__WRAPPED_\w+/g, 'void(0)')
+        .replace(/<meta[^>]*(?:mcas|McasCtx|McasTsid)[^>]*\/?>/gi, '')
+        .replace(/<script[^>]*src="[^"]*js-wrapper[^"]*"[^>]*><\/script>/gi, '')
+        .replace(/((?:src|href)\s*=\s*["'][^"']*?)\?McasCtx=[^"'&]*(?:&McasTsid=[^"'&]*)?(?:&McasUserAuth=[^"']*)?/gi, '$1');
+    }
+
+    function getAllowedApiConfig() {
+      return [
+        {
+          name: 'CAPRA',
+          origin: 'https://api.capra.flankspeed.us.navy.mil',
+          pathPrefixes: ['/server', '/user']
+        },
+        {
+          name: 'Army NIPR tenant',
+          origin: 'https://api.genai.army.mil',
+          pathPrefixes: ['/server', '/user']
+        }
+      ];
+    }
+
+    function normalizePath(path) {
+      let normalized = String(path || '/').trim();
+      if (!normalized.startsWith('/')) {
+        normalized = '/' + normalized;
+      }
+      normalized = normalized.replace(/\/+/g, '/').replace(/\/+$/, '');
+      return normalized || '/';
+    }
+
+    function buildSecurityMetaTags(hostOrigin) {
+      const apiOrigins = getAllowedApiConfig().map((entry) => entry.origin);
+      const connectSrcOrigins = ["'self'", hostOrigin].concat(apiOrigins)
+        .filter(Boolean)
+        .filter((value, index, values) => values.indexOf(value) === index)
+        .join(' ');
+      const cspDirectives = [
+        "default-src 'none'",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+        "style-src 'self' 'unsafe-inline'",
+        "worker-src blob:",
+        'connect-src ' + connectSrcOrigins,
+        "img-src * data: blob:",
+        "font-src data: blob:",
+        "media-src blob: data:",
+        "frame-src 'self' " + hostOrigin,
+        "base-uri 'self'",
+        "form-action 'self'",
+        "object-src 'none'"
+      ].join('; ') + ';';
+
+      return [
+        '<meta http-equiv="Content-Security-Policy" content="' + escapeAttribute(cspDirectives) + '">',
+        '<meta http-equiv="x-dns-prefetch-control" content="off">',
+        '<meta http-equiv="X-Content-Type-Options" content="nosniff">',
+        '<meta http-equiv="X-XSS-Protection" content="1; mode=block">',
+        '<meta http-equiv="Referrer-Policy" content="no-referrer">',
+        '<meta http-equiv="Permissions-Policy" content="geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), ambient-light-sensor=(), autoplay=(), encrypted-media=(), picture-in-picture=(), screen-wake-lock=()">'
+      ].join('\n');
+    }
+
+    function buildLinkHintGuardScript() {
+      return [
+        '(function(){',
+        '  try {',
+        '    var allowed = new Set(["stylesheet","icon","shortcut","apple-touch-icon","apple-touch-icon-precomposed","mask-icon","canonical","license","help","author","search","alternate"]);',
+        '    var normalize = function(v){ return (v || "").toLowerCase().split(/\\s+/).filter(Boolean); };',
+        '    var shouldNeutralize = function(el){',
+        '      if (!el || el.tagName !== "LINK") return false;',
+        '      var tokens = normalize(el.getAttribute("rel"));',
+        '      if (!tokens.length) return true;',
+        '      return tokens.some(function(t){ return !allowed.has(t); });',
+        '    };',
+        '    var neutralize = function(el){',
+        '      if (!shouldNeutralize(el)) return;',
+        '      el.setAttribute("data-firepit-blocked-rel", el.getAttribute("rel") || "");',
+        '      el.removeAttribute("href");',
+        '      el.removeAttribute("rel");',
+        '      if (el.parentNode) el.parentNode.removeChild(el);',
+        '    };',
+        '    document.querySelectorAll("link[rel]").forEach(neutralize);',
+        '    new MutationObserver(function(mutations){',
+        '      for (var i = 0; i < mutations.length; i++) {',
+        '        var m = mutations[i];',
+        '        if (m.type === "childList") {',
+        '          m.addedNodes.forEach(function(node){',
+        '            if (!node || node.nodeType !== 1) return;',
+        '            if (node.matches && node.matches("link[rel]")) neutralize(node);',
+        '            if (node.querySelectorAll) node.querySelectorAll("link[rel]").forEach(neutralize);',
+        '          });',
+        '        } else if (m.type === "attributes") { neutralize(m.target); }',
+        '      }',
+        '    }).observe(document.documentElement || document, { subtree:true, childList:true, attributes:true, attributeFilter:["rel","href"] });',
+        '  } catch(e){ console.warn("Firepit link-hint guard init failed:", e); }',
+        '})();'
+      ].join('');
+    }
+
+    function buildQueryParamGuardScript(hostOrigin) {
+      return [
+        '(function(){',
+        '  try {',
+        '    var MAILTO_ALLOWED = new Set(["subject","body","cc","bcc"]);',
+        '    var HOST_ORIGIN = ' + JSON.stringify(String(hostOrigin || '').toLowerCase()) + ';',
+        '    var currentDoc = new URL(location.href); currentDoc.search = ""; currentDoc.hash = "";',
+        '    var CURRENT_DOC_URL = currentDoc.toString();',
+        '    var normalizePath = function(v){ var p = String(v||"/").trim(); if(!p.startsWith("/")) p="/"+p; p=p.replace(/\\/+/g,"/").replace(/\\/+$/,""); return p||"/"; };',
+        '    var isMailto = function(v){ return /^\\s*mailto:/i.test(String(v||"")); };',
+        '    var resolveUrl = function(v,b){ return new URL(String(v||""),b||document.baseURI||location.href); };',
+        '    var isSameDocumentTarget = function(r){ try { return r.origin===currentDoc.origin && r.pathname===currentDoc.pathname; } catch(e){ return false; } };',
+        '    var isHostAllowedUrl = function(r){ try { return String(r.origin||"").toLowerCase()===HOST_ORIGIN; } catch(e){ return false; } };',
+        '    var sanitizeMailto = function(v){',
+        '      try { var p=new URL(String(v||"")); var k=new URLSearchParams();',
+        '        for(var pair of p.searchParams.entries()){ if(MAILTO_ALLOWED.has(String(pair[0]||"").toLowerCase())) k.append(pair[0],pair[1]); }',
+        '        var q=k.toString(); return "mailto:"+p.pathname+(q?"?"+q:"");',
+        '      } catch(e){ return "mailto:"; }',
+        '    };',
+        '    var sanitizeNavigationUrl = function(v,b,mode){',
+        '      var raw=String(v||""); if(!raw) return raw; if(raw.charAt(0)==="#") return raw;',
+        '      if(isMailto(raw)) return sanitizeMailto(raw);',
+        '      try { var parsed=resolveUrl(raw,b); parsed.username=""; parsed.password=""; parsed.search="";',
+        '        if(isHostAllowedUrl(parsed)) return parsed.toString();',
+        '        if(isSameDocumentTarget(parsed)) return parsed.toString();',
+        '        if(mode==="anchor"||mode==="open") return parsed.toString();',
+        '        return mode==="anchor"?"#":CURRENT_DOC_URL;',
+        '      } catch(e){ return mode==="anchor"?"#":CURRENT_DOC_URL; }',
+        '    };',
+        '    var sanitizeAnchorHref = function(v,b){ return sanitizeNavigationUrl(v,b,"anchor"); };',
+        '    var sanitizeEmbeddedUrl = function(v,b){',
+        '      var raw=String(v||""); if(!raw) return "about:blank";',
+        '      if(/^\\s*javascript:/i.test(raw)||/^\\s*data:/i.test(raw)) return "about:blank";',
+        '      try { var p=resolveUrl(raw,b); p.username=""; p.password=""; p.search=""; if(isSameDocumentTarget(p)||isHostAllowedUrl(p)) return p.toString(); return "about:blank"; } catch(e){ return "about:blank"; }',
+        '    };',
+        '    var sanitizeSrcdocValue = function(v){',
+        '      var raw=String(v||""); if(!raw) return "";',
+        '      if(/http-equiv\\s*=\\s*["\\\']?refresh|<base\\b|window\\s*\\.\\s*location|location\\s*\\.\\s*(href|assign|replace)|window\\s*\\.\\s*open/i.test(raw)) return "<!doctype html><meta charset=\\"utf-8\\"><title>Blocked</title>";',
+        '      return raw;',
+        '    };',
+        '    var neutralizeBaseHref = function(el){ if(!el||el.tagName!=="BASE"||el.hasAttribute("data-firepit-managed-base")) return; var r=el.getAttribute("href"); if(!r) return; el.setAttribute("data-firepit-blocked-base",r); el.removeAttribute("href"); };',
+        '    var isDownloadBypassHref = function(el,raw){ if(!el||el.tagName!=="A"||!el.hasAttribute("download")) return false; var h=String(raw||"").trim(); return /^blob:/i.test(h)||/^data:/i.test(h); };',
+        '    var updateBlockedNavAttr = function(el,raw,b,safe){ if(!el||el.tagName!=="A") return; if(safe==="#"){ try { var p=resolveUrl(raw,b); p.username=""; p.password=""; p.search=""; el.setAttribute("data-firepit-blocked-href",p.toString()); } catch(e){} } else el.removeAttribute("data-firepit-blocked-href"); };',
+        '    var sanitizeAttribute = function(el,attr){',
+        '      if(!el||!el.getAttribute) return; var raw=el.getAttribute(attr); if(!raw) return;',
+        '      if(attr==="href"&&isDownloadBypassHref(el,raw)) return;',
+        '      if(attr==="href"&&el.tagName==="BASE"){ neutralizeBaseHref(el); return; }',
+        '      var safe=raw, base=document.baseURI||location.href;',
+        '      if(attr==="href"&&el.tagName==="A"){ safe=sanitizeAnchorHref(raw,base); updateBlockedNavAttr(el,raw,base,safe); }',
+        '      if(attr==="action"&&el.tagName==="FORM") safe=sanitizeNavigationUrl(raw,base,"form");',
+        '      if(attr==="src"&&/^(IFRAME|FRAME|EMBED)$/.test(el.tagName)) safe=sanitizeEmbeddedUrl(raw,base);',
+        '      if(attr==="data"&&el.tagName==="OBJECT") safe=sanitizeEmbeddedUrl(raw,base);',
+        '      if(attr==="srcdoc"&&/^(IFRAME|FRAME)$/.test(el.tagName)) safe=sanitizeSrcdocValue(raw);',
+        '      if(attr==="http-equiv"&&el.tagName==="META"&&String(raw||"").toLowerCase()==="refresh"){ var c=String(el.getAttribute("content")||""); if(c) el.setAttribute("data-firepit-blocked-refresh",c); el.removeAttribute("http-equiv"); el.setAttribute("content",""); return; }',
+        '      if(attr==="content"&&el.tagName==="META"&&String(el.getAttribute("http-equiv")||"").toLowerCase()==="refresh"){ el.setAttribute("data-firepit-blocked-refresh",raw); el.removeAttribute("http-equiv"); safe=""; }',
+        '      if(safe!==raw) el.setAttribute(attr,safe);',
+        '    };',
+        '    var sanitizeFormBeforeSubmit = function(form){ if(!form||form.tagName!=="FORM") return {blocked:false}; sanitizeAttribute(form,"action"); var method=String((form.getAttribute("method")||form.method||"get")).trim().toLowerCase(); if(!method||method==="get") return {blocked:true,reason:"Blocked GET form submission by Firepit guard."}; return {blocked:false}; };',
+        '    var sanitizeNode = function(node){',
+        '      if(!node||node.nodeType!==1) return;',
+        '      if(node.matches){ if(node.matches("a[href]")) sanitizeAttribute(node,"href"); if(node.matches("base[href]")) sanitizeAttribute(node,"href"); if(node.matches("form[action]")) sanitizeAttribute(node,"action"); if(node.matches("meta[http-equiv][content]")) sanitizeAttribute(node,"content"); if(node.matches("iframe[src],frame[src],embed[src]")) sanitizeAttribute(node,"src"); if(node.matches("object[data]")) sanitizeAttribute(node,"data"); if(node.matches("iframe[srcdoc],frame[srcdoc]")) sanitizeAttribute(node,"srcdoc"); }',
+        '      if(node.querySelectorAll){ node.querySelectorAll("a[href]").forEach(function(a){sanitizeAttribute(a,"href");}); node.querySelectorAll("base[href]").forEach(function(b){sanitizeAttribute(b,"href");}); node.querySelectorAll("form[action]").forEach(function(f){sanitizeAttribute(f,"action");}); node.querySelectorAll("meta[http-equiv][content]").forEach(function(m){sanitizeAttribute(m,"content");}); node.querySelectorAll("iframe[src],frame[src],embed[src]").forEach(function(el){sanitizeAttribute(el,"src");}); node.querySelectorAll("object[data]").forEach(function(o){sanitizeAttribute(o,"data");}); node.querySelectorAll("iframe[srcdoc],frame[srcdoc]").forEach(function(el){sanitizeAttribute(el,"srcdoc");}); }',
+        '    };',
+        '    sanitizeNode(document.documentElement||document);',
+        '    try { var lp=window.Location&&window.Location.prototype; if(lp&&typeof lp.assign==="function"){ var assign0=lp.assign; lp.assign=function(url){ return assign0.call(this,sanitizeNavigationUrl(url,this&&this.href?this.href:location.href,"location")); }; } if(lp&&typeof lp.replace==="function"){ var replace0=lp.replace; lp.replace=function(url){ return replace0.call(this,sanitizeNavigationUrl(url,this&&this.href?this.href:location.href,"location")); }; } } catch(e){}',
+        '    if(history&&typeof history.pushState==="function"){ var push0=history.pushState.bind(history); history.pushState=function(s,t,u){ return push0(s,t,(typeof u==="string"&&u.length)?sanitizeNavigationUrl(u,location.href,"history"):u); }; }',
+        '    if(history&&typeof history.replaceState==="function"){ var rpl0=history.replaceState.bind(history); history.replaceState=function(s,t,u){ return rpl0(s,t,(typeof u==="string"&&u.length)?sanitizeNavigationUrl(u,location.href,"history"):u); }; }',
+        '    document.addEventListener("click",function(ev){ var t=ev.target&&ev.target.closest?ev.target.closest("a[href]"):null; if(t){ var rh=t.getAttribute("href")||""; if(!isDownloadBypassHref(t,rh)) sanitizeAttribute(t,"href"); } },true);',
+        '    document.addEventListener("submit",function(ev){ var f=ev.target; if(!f||!f.matches||!f.matches("form")) return; var r=sanitizeFormBeforeSubmit(f); if(r.blocked){ ev.preventDefault(); ev.stopImmediatePropagation(); console.warn(r.reason); } },true);',
+        '    var fp=window.HTMLFormElement&&window.HTMLFormElement.prototype; if(fp&&typeof fp.submit==="function"){ var sub0=fp.submit; fp.submit=function(){ var r=sanitizeFormBeforeSubmit(this); if(r.blocked){console.warn(r.reason);return;} return sub0.call(this); }; } if(fp&&typeof fp.requestSubmit==="function"){ var rsub0=fp.requestSubmit; fp.requestSubmit=function(sm){ var r=sanitizeFormBeforeSubmit(this); if(r.blocked){console.warn(r.reason);return;} return rsub0.call(this,sm); }; }',
+        '    new MutationObserver(function(mutations){ for(var i=0;i<mutations.length;i++){ var m=mutations[i]; if(m.type==="childList"){ m.addedNodes.forEach(function(n){sanitizeNode(n);}); } else if(m.type==="attributes"){ sanitizeNode(m.target); } } }).observe(document.documentElement||document,{subtree:true,childList:true,attributes:true,attributeFilter:["href","action","method","src","data","srcdoc","content","http-equiv"]});',
+        '  } catch(e){ console.warn("Firepit query-param guard init failed:",e); }',
+        '})();'
+      ].join('');
+    }
+
+    function buildNetworkGuardScript(hostOrigin) {
+      const allowedApis = getAllowedApiConfig().map((entry) => {
+        return {
+          name: entry.name,
+          origin: entry.origin.toLowerCase(),
+          pathPrefixes: entry.pathPrefixes.map(normalizePath)
+        };
+      });
+
+      return [
+        '(function(){',
+        '  try {',
+        '    var HOST_ORIGIN = ' + JSON.stringify(String(hostOrigin || '').toLowerCase()) + ';',
+        '    var ALLOWED_APIS = ' + JSON.stringify(allowedApis) + ';',
+        '    var warnLast=""; var warnTimer=null;',
+        '    var normalizePath = function(v){ var p=String(v||"/").trim(); if(!p.startsWith("/")) p="/"+p; p=p.replace(/\\/+/g,"/").replace(/\\/+$/,""); return p||"/"; };',
+        '    var warn = function(kind,url,reason){',
+        '      var target=url; try { var p=new URL(url,document.baseURI||location.href); if(p.origin&&p.origin!=="null") target=p.origin; } catch(e){}',
+        '      var msg="Blocked outbound "+kind+(target?" to "+target:"")+". "+reason;',
+        '      var key=kind+"|"+target; if(warnLast===key) return; warnLast=key;',
+        '      var host=document.getElementById("firepit-network-warning");',
+        '      if(!host){ host=document.createElement("div"); host.id="firepit-network-warning"; host.setAttribute("role","alert"); host.style.cssText="position:fixed;top:12px;right:12px;max-width:min(420px,calc(100vw - 24px));z-index:2147483647;pointer-events:none;font-family:system-ui,sans-serif;background:#7f1d1d;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:10px 12px;font-size:13px;line-height:1.4"; (document.body||document.documentElement).appendChild(host); }',
+        '      host.textContent=msg; host.hidden=false; if(warnTimer) clearTimeout(warnTimer); warnTimer=setTimeout(function(){ var el=document.getElementById("firepit-network-warning"); if(el) el.hidden=true; },6500);',
+        '      try { console.warn(msg); } catch(e){}',
+        '    };',
+        '    var isAllowedApi = function(parsed){',
+        '      var origin=String(parsed.origin||"").toLowerCase(); var path=normalizePath(parsed.pathname||"/");',
+        '      for(var i=0;i<ALLOWED_APIS.length;i++){ var api=ALLOWED_APIS[i]; if(origin!==api.origin) continue; for(var j=0;j<api.pathPrefixes.length;j++){ var prefix=normalizePath(api.pathPrefixes[j]); if(path===prefix||path.indexOf(prefix+"/")===0) return true; } }',
+        '      return false;',
+        '    };',
+        '    var isAllowed = function(url){',
+        '      try {',
+        '        var parsed = new URL(String(url), document.baseURI || location.href);',
+        '        var proto = String(parsed.protocol || "").toLowerCase();',
+        '        if (proto === "data:" || proto === "blob:") return true;',
+        '        if (!["http:","https:","ws:","wss:"].includes(proto)) return true;',
+        '        var o = String(parsed.origin || "").toLowerCase();',
+        '        return o === HOST_ORIGIN || isAllowedApi(parsed);',
+        '      } catch(e){ return false; }',
+        '    };',
+        '    if(typeof window.fetch==="function"){ var fetch0=window.fetch.bind(window); window.fetch=function(input,init){ var url=""; try { if(typeof input==="string"||input instanceof URL) url=String(input); else if(input&&typeof input.url==="string") url=input.url; } catch(e){} if(!isAllowed(url)){ warn("fetch",url,"Origin or API path not allowed by Firepit."); return Promise.reject(new Error("Blocked by Firepit: origin or API path not allowed.")); } return fetch0.apply(this,arguments); }; }',
+        '    if(window.XMLHttpRequest&&window.XMLHttpRequest.prototype){ var xhrMeta=new WeakMap(); var proto=window.XMLHttpRequest.prototype; var open0=proto.open; var send0=proto.send; proto.open=function(method,url){ xhrMeta.set(this,{url:String(url==null?"":url),blocked:!isAllowed(url)}); return open0.apply(this,arguments); }; proto.send=function(){ var m=xhrMeta.get(this); if(m&&m.blocked){ warn("xmlhttprequest",m.url,"Origin or API path not allowed by Firepit."); try{if(typeof this.onerror==="function") this.onerror(new Error("Blocked by Firepit."));}catch(e){} try{this.dispatchEvent(new Event("error"));}catch(e){} return; } return send0.apply(this,arguments); }; }',
+        '    if(typeof window.WebSocket==="function"){ var WS0=window.WebSocket; window.WebSocket=function(url,protocols){ if(!isAllowed(url)){ warn("websocket",String(url),"Origin or API path not allowed by Firepit."); throw new Error("Blocked by Firepit: origin or API path not allowed."); } return arguments.length>1?new WS0(url,protocols):new WS0(url); }; window.WebSocket.prototype=WS0.prototype; try{Object.setPrototypeOf(window.WebSocket,WS0);}catch(e){} }',
+        '    if(typeof window.EventSource==="function"){ var ES0=window.EventSource; window.EventSource=function(url,cfg){ if(!isAllowed(url)){ warn("eventsource",String(url),"Origin or API path not allowed by Firepit."); throw new Error("Blocked by Firepit: origin or API path not allowed."); } return arguments.length>1?new ES0(url,cfg):new ES0(url); }; window.EventSource.prototype=ES0.prototype; try{Object.setPrototypeOf(window.EventSource,ES0);}catch(e){} }',
+        '    if(navigator&&typeof navigator.sendBeacon==="function"){ var sb0=navigator.sendBeacon.bind(navigator); navigator.sendBeacon=function(url,data){ if(!isAllowed(url)){ warn("sendbeacon",String(url),"Origin or API path not allowed by Firepit."); return false; } return sb0(url,data); }; }',
+        '  } catch(e){ console.warn("Firepit network guard init failed:",e); }',
+        '})();'
+      ].join('');
+    }
+
+    function getSecurityInjection(hostOrigin) {
+      return [
+        '<!-- Firepit: Data-exfiltration prevention -->',
+        buildSecurityMetaTags(hostOrigin),
+        '<script>' + buildLinkHintGuardScript() + '<' + '/script>',
+        '<script>' + buildQueryParamGuardScript(hostOrigin) + '<' + '/script>',
+        '<script>' + buildNetworkGuardScript(hostOrigin) + '<' + '/script>'
+      ].join('\n');
+    }
+
+    function injectBaseTag(html, sourceUrl, originalUrl) {
+      const baseHref = sourceUrl.href.replace(/[^/?#]+(?:[?#].*)?$/, '');
+      const baseTag = '<base data-firepit-managed-base="true" href="' + baseHref.replace(/"/g, '&quot;') + '">';
+      const hostOrigin = getRendererBaseUrl() ? new URL(getRendererBaseUrl(), window.location.href).origin : window.location.origin;
+      const preloadTags = baseTag +
+        getSecurityInjection(hostOrigin) +
+        getInjectedMetaTags(originalUrl || sourceUrl, sourceUrl) +
+        (unloadShimInput.checked ? getUnloadShimScript() : '');
+
+      if (/<head[\s>]/i.test(html)) {
+        return html.replace(/<head([^>]*)>/i, '<head$1>' + preloadTags);
+      }
+
+      return '<!doctype html><html><head>' + preloadTags + '</head><body>' + html + '</body></html>';
+    }
+
+    function clearObjectUrl() {
+      if (currentObjectUrl) {
+        URL.revokeObjectURL(currentObjectUrl);
+        currentObjectUrl = '';
+      }
+    }
+
+    function renderInPreviewFrame(html) {
+      clearObjectUrl();
+      preview.removeAttribute('src');
+      preview.srcdoc = html;
+      setStatus(isFullscreenMode() ? 'Rendered full screen.' : 'Rendered inside the Fusion page frame.', 'ok');
+    }
+
+    async function renderFetched() {
+      setBusy(true);
+      updateSandbox();
+      const fullscreenMode = isFullscreenMode();
+      if (fullscreenMode) {
+        enterPageView();
+      }
+
+      try {
+        const originalUrl = normalizeConfluenceUrl(sourceInput.value);
+        const candidateUrls = await getRenderableUrls(sourceInput.value);
+        const sourceUrl = candidateUrls[0];
+        let response = null;
+        let lastError = null;
+        let renderedSourceUrl = sourceUrl;
+
+        for (const candidateUrl of candidateUrls) {
+          setStatus('Fetching ' + candidateUrl.href);
+
+          try {
+            response = await fetch(candidateUrl.href, {
+              credentials: 'include',
+              cache: 'no-store'
+            });
+
+            if (response.ok) {
+              renderedSourceUrl = candidateUrl;
+              break;
+            }
+
+            lastError = new Error(candidateUrl.href + ' returned HTTP ' + response.status + '.');
+          } catch (error) {
+            lastError = error;
+          }
+        }
+
+        if (!response || !response.ok) {
+          throw lastError || new Error('Fetch failed.');
+        }
+
+        const html = cleanHtmlContent(await response.text());
+        const sourceHref = response.url || renderedSourceUrl.href;
+        const renderedHtml = injectBaseTag(html, new URL(sourceHref), originalUrl);
+        await rememberUrl(new URL(sourceInput.value, window.location.href));
+        renderInPreviewFrame(renderedHtml);
+      } catch (error) {
+        exitPageView();
+        setStatus(error.message + ' If this fails, Confluence is blocking authenticated fetch for this attachment.', 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function openDirect() {
+      try {
+        setBusy(true);
+        updateSandbox();
+        const sourceUrl = (await getRenderableUrls(sourceInput.value))[0];
+        await rememberUrl(new URL(sourceInput.value, window.location.href));
+        clearObjectUrl();
+        preview.removeAttribute('srcdoc');
+        preview.src = sourceUrl.href;
+        setStatus('Opened the raw attachment URL directly from ' + sourceUrl.href + '. If Confluence forces downloads, use Render App instead.', 'ok');
+      } catch (error) {
+        setStatus(error.message, 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    renderButton.addEventListener('click', renderFetched);
+    directButton.addEventListener('click', openDirect);
+    sandboxInput.addEventListener('change', updateSandbox);
+    sameOriginInput.addEventListener('change', updateSandbox);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        exitPageView();
+      }
+    });
+    sourceInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        renderFetched();
+      }
+    });
+
+    updateSandbox();
+
+    loadSavedSourceUrl().then((hasSourceUrl) => {
+      if (hasSourceUrl && sourceInput.value) {
+        renderFetched();
+      }
+    });
+  </script>
+</body>
+</html>

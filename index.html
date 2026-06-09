@@ -676,6 +676,90 @@ body {
             color: #93a4b7 !important;
         }
 
+        #ship-choice-modal .modal-content,
+        #ship-saved-modal .modal-content {
+            color: #dce3eb;
+        }
+
+        .ship-release-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.5rem;
+        }
+
+        .ship-release-option {
+            border: 1px solid #314156;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 0;
+            padding: 0.5rem 0.6rem;
+        }
+
+        .ship-choice-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.6rem;
+        }
+
+        .ship-choice-grid > .btn {
+            min-height: 88px;
+        }
+
+        .ship-nested-grid .btn {
+            min-height: 72px;
+        }
+
+        .ship-choice-grid small {
+            line-height: 1.35;
+        }
+
+        .ship-option-panel {
+            background: #111a25;
+            border: 1px solid #314156;
+            border-radius: 10px;
+            grid-column: 1 / -1;
+            padding: 0.6rem;
+        }
+
+        .ship-nested-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.6rem;
+        }
+
+        .ship-option-panel-label {
+            color: #93a4b7;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .forge-ship-clipboard-alert {
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .forge-ship-clipboard-alert-success {
+            background: #123524;
+            border-color: #2ddc82;
+            color: #d7ffe9;
+        }
+
+        .forge-ship-clipboard-alert-warning {
+            background: #3a2b0b;
+            border-color: #f59e0b;
+            color: #fff2c2;
+        }
+
+        @media (max-width: 575.98px) {
+            .ship-release-grid,
+            .ship-choice-grid,
+            .ship-nested-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         #advanced-incorporate-context::placeholder {
             color: #5a6b7e;
         }
@@ -3469,57 +3553,80 @@ https://cdn.plot.ly
 
     <!-- Ship Choice Modal -->
     <div class="modal fade" id="ship-choice-modal" tabindex="-1" aria-labelledby="ship-choice-modal-label" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 680px;">
             <div class="modal-content" style="background: #1a2233; border: 1px solid #232e3b; border-radius: 12px;">
-                <div class="modal-header border-0 pb-0">
+                <div class="modal-header border-0 pb-1">
                     <h5 class="modal-title" id="ship-choice-modal-label">Ship Your App</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pt-2">
-                    <p class="text-muted small mb-2">Choose how you want to compile and ship your app.</p>
-                    <p class="text-muted small mb-3">Ship writes a versioned HTML file into <code>Shipped Apps</code> inside the current app folder using the file access permission you already granted.</p>
-                    <div class="mb-3">
+                    <p class="text-muted small mb-2">Ship writes a versioned HTML file into <code>Shipped Apps</code>.</p>
+                    <div class="mb-2">
                         <div class="small text-uppercase text-muted mb-2" style="letter-spacing: 0.04em;">Release Type</div>
-                        <div class="d-grid gap-2">
-                            <label class="border rounded p-2 mb-0" style="border-color:#314156 !important; cursor:pointer;">
+                        <div class="ship-release-grid">
+                            <label class="ship-release-option">
                                 <input class="form-check-input me-2" type="radio" name="ship-release-type" value="major">
                                 <strong>Major update</strong>
-                                <small class="d-block text-muted mt-1">Breaks from the last shipped baseline and increments the main version number.</small>
+                                <small class="d-block text-muted mt-1">Increments the main version.</small>
                             </label>
-                            <label class="border rounded p-2 mb-0" style="border-color:#314156 !important; cursor:pointer;">
+                            <label class="ship-release-option">
                                 <input class="form-check-input me-2" type="radio" name="ship-release-type" value="feature" checked>
                                 <strong>Minor feature add</strong>
-                                <small class="d-block text-muted mt-1">Adds capability and increments the dot build, for example <code>1.0</code> to <code>1.1</code>.</small>
+                                <small class="d-block text-muted mt-1">Increments the dot build.</small>
                             </label>
-                            <label class="border rounded p-2 mb-0" style="border-color:#314156 !important; cursor:pointer;">
+                            <label class="ship-release-option">
                                 <input class="form-check-input me-2" type="radio" name="ship-release-type" value="bugfix">
                                 <strong>Bug fix</strong>
-                                <small class="d-block text-muted mt-1">Keeps the current major/minor and increments the patch build, for example <code>1.0</code> to <code>1.0.1</code>.</small>
+                                <small class="d-block text-muted mt-1">Increments the patch build.</small>
                             </label>
                         </div>
                         <div id="ship-version-preview" class="small text-info mt-2">Next shipped version: calculating...</div>
                     </div>
-                    <div class="d-grid gap-2">
-                        <button id="ship-offline-btn" type="button" class="btn btn-warning text-start p-3" style="border-radius: 8px;">
+                    <div class="ship-choice-grid">
+                        <button id="ship-offline-btn" type="button" class="btn btn-warning text-start p-2" style="border-radius: 8px;">
                             <strong class="d-block mb-1">Ship for Offline</strong>
                             <small class="text-dark opacity-75">Includes security headers and isolated runtime wrapper. Best for standalone use on local machines.</small>
                         </button>
-                        <button id="ship-sharepoint-btn" type="button" class="btn btn-outline-info text-start p-3" style="border-radius: 8px;">
+                        <button id="ship-sharepoint-btn" type="button" class="btn btn-outline-info text-start p-2" style="border-radius: 8px;" aria-expanded="false" aria-controls="ship-sharepoint-options">
                             <strong class="d-block mb-1">Ship for SharePoint</strong>
-                            <small>No security headers. Produces a clean HTML file compatible with SharePoint/SPFx hosting.</small>
+                            <small>No security headers. Choose Flank Speed SharePoint or legacy IntelShare next.</small>
                         </button>
-                        <button id="ship-fusion-wiki-btn" type="button" class="btn btn-outline-info text-start p-3" style="border-radius: 8px;">
-                            <strong class="d-block mb-1">Ship for Fusion Wiki</strong>
-                            <small>Saves a clean HTML file and copies the shipped code to your clipboard for the Fusion HTML macro.</small>
+                        <button id="ship-fusion-options-btn" type="button" class="btn btn-outline-info text-start p-2" style="border-radius: 8px;" aria-expanded="false" aria-controls="ship-fusion-options">
+                            <strong class="d-block mb-1">Ship for Fusion</strong>
+                            <small>Choose Firepit file hosting or copy/paste macro deployment next.</small>
                         </button>
-                        <button id="ship-fusion-wiki-fullscreen-btn" type="button" class="btn btn-outline-info text-start p-3" style="border-radius: 8px;">
-                            <strong class="d-block mb-1">Ship for Fusion Wiki Fullscreen</strong>
-                            <small>Wraps the app in a fullscreen iframe and restricts network access to Fusion's host URL and CAPRA.</small>
-                        </button>
-                        <button id="ship-legacy-sharepoint-btn" type="button" class="btn btn-outline-info text-start p-3" style="border-radius: 8px;">
-                            <strong class="d-block mb-1">Ship for Legacy IntelShare</strong>
-                            <small>No security headers. Produces a clean <code>.aspx</code> page for direct upload to <code>SitePages</code>.</small>
-                        </button>
+                        <div id="ship-sharepoint-options" class="ship-option-panel d-none" aria-label="SharePoint shipping options">
+                            <div class="ship-option-panel-label mb-2">SharePoint Target</div>
+                            <div class="ship-nested-grid">
+                                <button id="ship-flankspeed-sharepoint-btn" type="button" class="btn btn-warning text-start p-2" style="border-radius: 8px;">
+                                    <strong class="d-block mb-1">Ship for Flank Speed</strong>
+                                    <small class="text-dark opacity-75">Produces a clean HTML file compatible with SharePoint/SPFx hosting.</small>
+                                </button>
+                                <button id="ship-legacy-sharepoint-btn" type="button" class="btn btn-outline-info text-start p-2" style="border-radius: 8px;">
+                                    <strong class="d-block mb-1">Ship for Legacy SharePoint</strong>
+                                    <small>No security headers. Produces a clean <code>.aspx</code> page for direct upload to <code>SitePages</code>.</small>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="ship-fusion-options" class="ship-option-panel d-none" aria-label="Fusion shipping options">
+                            <div class="d-flex align-items-center justify-content-between gap-3 mb-2 flex-wrap">
+                                <div class="ship-option-panel-label mb-0">Fusion Deployment</div>
+                                <label class="form-check form-switch mb-0">
+                                    <input id="ship-fusion-fullscreen-toggle" class="form-check-input" type="checkbox" checked>
+                                    <span class="form-check-label small">Full screen</span>
+                                </label>
+                            </div>
+                            <div class="ship-nested-grid">
+                                <button id="ship-fusion-firepit-btn" type="button" class="btn btn-warning text-start p-2" style="border-radius: 8px;">
+                                    <strong class="d-block mb-1">Firepit Deployment</strong>
+                                    <small class="text-dark opacity-75">Saves a stable app file and copies the Firepit renderer macro. Firepit provides the security wrapper.</small>
+                                </button>
+                                <button id="ship-fusion-copy-paste-btn" type="button" class="btn btn-outline-info text-start p-2" style="border-radius: 8px;">
+                                    <strong class="d-block mb-1">Copy/Paste Deployment</strong>
+                                    <small>Copies secured macro code directly for Fusion. Use this when you are not uploading an app file.</small>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3777,7 +3884,7 @@ https://cdn.plot.ly
                     <div class="security-explainer-card">
                         <div class="security-explainer-kicker"><strong>Mobile Code</strong> is governed under SC-18 in the host ATO boundary</div>
                         <p class="mb-2">Forge apps are mobile code, compiled for offline browser execution with no required server, no database, and no app-hosted API surface. That removes by default automated interconnects common to normal web systems.</p>
-                        <p class="mb-2">Forge adds defense-in-depth controls for offline builds: restrictive security headers, URL/form/link hardening, iframe isolation with a mediated bridge for sensitive operations, and verification artifacts. SharePoint builds are different: Forge does not add those headers because Firepit supplies the SharePoint-hosted security wrapper.</p>
+                        <p class="mb-2">Forge adds defense-in-depth controls for offline builds: restrictive security headers, URL/form/link hardening, iframe isolation with a mediated bridge for sensitive operations, and verification artifacts. Hosted builds are different: SharePoint Firepit and Fusion Firepit paths use their host renderer as the security boundary, while Fusion copy/paste builds include Forge's Fusion security wrapper directly in the HTML macro.</p>
                         <p class="mb-0">For RMF: treat this under <strong>SC-18 Mobile Code</strong> and host-system controls. The host browser is the authorized system boundary; the HTML/JS file is managed as mobile code executed inside that boundary. <strong>The browser maintains the ATO, not the html file application.</strong></p>
                     </div>
 
@@ -3816,6 +3923,14 @@ https://cdn.plot.ly
 	                        <p class="mb-2">In the SharePoint path, Forge ships a clean HTML file and Firepit, the SPFx host, provides the sandboxed wrapper and optional lockdown CSP inside the SharePoint page. This avoids stacking Forge's offline wrapper on top of Firepit's host controls.</p>
 	                        <p class="mb-2">SharePoint API traffic stays inside the SharePoint tenant/site boundary and uses the user's existing SharePoint identity and permissions.</p>
 	                        <p class="mb-0">Result: SharePoint-hosted apps run through Firepit's host security model, while offline Forge builds continue to receive Forge's security headers and isolated runtime wrapper.</p>
+	                    </div>
+
+	                    <div class="security-explainer-card">
+	                        <h6>Fusion Enclave Pattern (Confluence HTML Macro Hosting)</h6>
+	                        <p class="mb-2">When Fusion is the approved collaboration enclave, Forge treats the Fusion page, HTML macro, uploaded attachments, page properties, and current user's Confluence session as the host boundary.</p>
+	                        <p class="mb-2"><strong>Copy/Paste Deployment</strong> places the secured Forge output directly into the Fusion HTML macro. That output includes Forge's Fusion wrapper, sandboxed iframe execution, URL/form/link hardening, and a parent bridge that allows Confluence page-property persistence only through the current user's Fusion session.</p>
+	                        <p class="mb-2"><strong>Firepit Deployment</strong> stores only the small <code>fusion-firepit.html</code> renderer in the HTML macro. The larger app is uploaded as a Fusion page file or attachment and is loaded by the renderer into a sandboxed iframe. In this path, the uploaded app skips Forge's embedded wrapper because the Firepit renderer supplies the host security boundary.</p>
+	                        <p class="mb-0">Result: Fusion apps do not introduce a separate backend service. Data persistence and file retrieval stay in the Fusion/Confluence page context, subject to the user's existing Fusion permissions and the page's configured access controls.</p>
 	                    </div>
 	
 	                    <div class="security-explainer-card">
@@ -3861,8 +3976,8 @@ https://cdn.plot.ly
 	                    <div class="security-explainer-card">
 	                        <h6>What Forge Actually Does to Secure Apps (Control Inventory)</h6>
 	                        <ol class="mb-0">
-	                            <li><strong>Offline restrictive CSP injection</strong>: default deny model with <code>default-src 'none'</code>, <code>connect-src 'none'</code> by default (or explicit API allowlist), <code>form-action 'none'</code>, <code>frame-src 'none'</code>, <code>object-src 'none'</code>, and <code>manifest-src 'none'</code>. SharePoint builds skip this Forge header layer so Firepit can own the host security wrapper.</li>
-	                            <li><strong>Offline header hardening</strong>: adds <code>Referrer-Policy: no-referrer</code>, <code>X-Content-Type-Options: nosniff</code>, <code>Permissions-Policy</code>, and DNS prefetch suppression. SharePoint-hosted Firepit pages handle the SharePoint-side security header/wrapper behavior instead.</li>
+	                            <li><strong>Offline restrictive CSP injection</strong>: default deny model with <code>default-src 'none'</code>, <code>connect-src 'none'</code> by default (or explicit API allowlist), <code>form-action 'none'</code>, <code>frame-src 'none'</code>, <code>object-src 'none'</code>, and <code>manifest-src 'none'</code>. Hosted Firepit builds skip this Forge header layer so the host renderer can own the security wrapper.</li>
+	                            <li><strong>Offline header hardening</strong>: adds <code>Referrer-Policy: no-referrer</code>, <code>X-Content-Type-Options: nosniff</code>, <code>Permissions-Policy</code>, and DNS prefetch suppression. SharePoint-hosted and Fusion Firepit pages handle their side of the security header/wrapper behavior instead.</li>
 	                            <li><strong>Link-hint neutralization</strong>: runtime strips/neutralizes risky <code>&lt;link rel&gt;</code> hints with browser-dependent CSP behavior (for example prefetch/prerender-like paths).</li>
 	                            <li><strong>URL/query hardening</strong>: runtime sanitizes navigation targets and strips query strings by default; only approved mail compose params (<code>subject</code>, <code>body</code>, <code>cc</code>, <code>bcc</code>) are retained for <code>mailto:</code>. In SharePoint compatibility mode, query params are allowed for the configured SharePoint origin only.</li>
 	                            <li><strong>Form exfil controls</strong>: sanitizes form actions and blocks GET submissions that leak data in URLs.</li>
@@ -3873,6 +3988,8 @@ https://cdn.plot.ly
 	                            <li><strong>First API-call approval gate</strong>: for non-SharePoint allowlisted API origins, the host shell prompts for explicit user permission before outbound API calls are allowed.</li>
 	                            <li><strong>SharePoint Firepit hosting mode</strong>: Ship for SharePoint outputs HTML without Forge-added security headers; Firepit loads that file from SharePoint and provides the SPFx-hosted sandbox/wrapper.</li>
 	                            <li><strong>SharePoint context seeding</strong>: Firepit seeds <code>_spPageContextInfo</code> into the hosted app so SharePoint context detection remains stable in iframe deployments.</li>
+	                            <li><strong>Fusion copy/paste hosting mode</strong>: Ship for Fusion copy/paste includes Forge's Fusion wrapper inside the HTML macro, with sandboxed app execution and Confluence page-property persistence mediated through the parent bridge.</li>
+	                            <li><strong>Fusion Firepit hosting mode</strong>: Ship for Fusion Firepit outputs an uploaded app file without the embedded wrapper; the <code>fusion-firepit.html</code> renderer in the Fusion HTML macro loads the app and supplies the sandboxed host boundary.</li>
 	                            <li><strong>Integrity and evidence outputs</strong>: manifest/hashes and security testing workflows support auditability and reproducibility.</li>
 	                        </ol>
 	                    </div>
@@ -4122,11 +4239,13 @@ https://cdn.plot.ly
                 <div class="modal-body">
                     <div class="sharepoint-guide-card">
                         <div class="sharepoint-guide-kicker">Fusion Wiki HTML Macro</div>
-                        <p class="mb-0">Use <strong>Ship for Fusion Wiki</strong> from the Ship modal. Forge saves the shipped HTML file in <code>Shipped Apps</code> and copies the exact shipped code to your clipboard so you can paste it directly into Fusion.</p>
+                        <p class="mb-0">Use <strong>Ship for Fusion</strong> from the Ship modal. Choose <strong>Copy/Paste Deployment</strong> for the quickest path when the shipped HTML is small enough for the Fusion HTML macro, or choose <strong>Firepit Deployment</strong> for larger apps because the macro only hosts the renderer and the app itself is loaded from an uploaded file. Use the <strong>Full screen</strong> toggle with either path.</p>
                     </div>
                     <div class="sharepoint-guide-card">
-                        <h6>Deployment Steps</h6>
+                        <h6>Copy/Paste Deployment</h6>
+                        <p class="mb-2">This is the fastest deployment path, but it is limited by how much HTML Fusion will accept inside one HTML macro. Use it for smaller apps and quick updates.</p>
                         <ol class="mb-0">
+                            <li>Choose <strong>Ship for Fusion</strong>, set the <strong>Full screen</strong> toggle, then choose <strong>Copy/Paste Deployment</strong>.</li>
                             <li>Create a space in Fusion.</li>
                             <li>Press <strong>Create</strong> at the top to create a page.</li>
                             <li>Press the <strong>+</strong> sign.</li>
@@ -4138,12 +4257,23 @@ https://cdn.plot.ly
                         </ol>
                     </div>
                     <div class="sharepoint-guide-card">
-                        <h6>Updating A Fusion Page</h6>
-                        <p class="mb-0">Ship for Fusion Wiki again, return to the Fusion page, edit the HTML macro, replace the old code with the newly copied shipped code, and publish the page.</p>
+                        <h6>Firepit Deployment</h6>
+                        <p class="mb-2">This path is not constrained by the HTML macro's pasted-code size limit because Fusion only stores the small Firepit renderer in the macro. The full app is uploaded as a file and loaded by URL.</p>
+                        <ol class="mb-0">
+                            <li>Choose <strong>Ship for Fusion</strong>, set the <strong>Full screen</strong> toggle, then choose <strong>Firepit Deployment</strong>.</li>
+                            <li>Upload the saved <code>-current.html</code> app file from <code>Shipped Apps</code> to the Fusion page file list or attachments area.</li>
+                            <li>Copy the uploaded HTML file link.</li>
+                            <li>Add an <strong>HTML</strong> macro to the Fusion page and paste the copied <code>fusion-firepit.html</code> renderer code into it.</li>
+                            <li>Publish the page, paste the uploaded HTML file link into <strong>HTML file link</strong>, and press <strong>Render App</strong>. The renderer saves that link in the page properties for future page loads.</li>
+                        </ol>
                     </div>
                     <div class="sharepoint-guide-card">
-                        <h6>Fullscreen Iframe Option</h6>
-                        <p class="mb-0">Use <strong>Ship for Fusion Wiki Fullscreen</strong> when the app should take over the page. Forge wraps the shipped app in a fullscreen iframe, hides common Confluence page chrome, and adds a child Content Security Policy that allows network connections only to the current Fusion host URL and CAPRA.</p>
+                        <h6>Updating A Fusion Page</h6>
+                        <p class="mb-0">For copy/paste deployment, ship again, edit the HTML macro, replace the old code, and publish. For Firepit deployment, ship again and replace the uploaded <code>-current.html</code> file in Fusion; the renderer keeps pointing at the same file link.</p>
+                    </div>
+                    <div class="sharepoint-guide-card">
+                        <h6>Security Behavior</h6>
+                        <p class="mb-0"><strong>Copy/Paste Deployment</strong> includes Forge's Fusion security wrapper. <strong>Firepit Deployment</strong> saves the uploaded app without that wrapper because the Firepit renderer supplies the host security boundary.</p>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -5756,11 +5886,37 @@ Now answer the user's Forge question with exact steps and rationale.</textarea>
                         compiler.refreshLivePreview({ skipSave: true, quiet: true });
                     }
                 });
+                const resetShipChoiceSubOptions = () => {
+                    const sharePointOptions = document.getElementById('ship-sharepoint-options');
+                    const fusionOptions = document.getElementById('ship-fusion-options');
+                    const sharePointBtn = document.getElementById('ship-sharepoint-btn');
+                    const fusionBtn = document.getElementById('ship-fusion-options-btn');
+                    if (sharePointOptions) sharePointOptions.classList.add('d-none');
+                    if (fusionOptions) fusionOptions.classList.add('d-none');
+                    if (sharePointBtn) sharePointBtn.setAttribute('aria-expanded', 'false');
+                    if (fusionBtn) fusionBtn.setAttribute('aria-expanded', 'false');
+                };
+                const showShipChoiceSubOptions = (target) => {
+                    const sharePointOptions = document.getElementById('ship-sharepoint-options');
+                    const fusionOptions = document.getElementById('ship-fusion-options');
+                    const sharePointBtn = document.getElementById('ship-sharepoint-btn');
+                    const fusionBtn = document.getElementById('ship-fusion-options-btn');
+                    const showSharePoint = target === 'sharepoint';
+                    if (sharePointOptions) sharePointOptions.classList.toggle('d-none', !showSharePoint);
+                    if (fusionOptions) fusionOptions.classList.toggle('d-none', showSharePoint);
+                    if (sharePointBtn) sharePointBtn.setAttribute('aria-expanded', showSharePoint ? 'true' : 'false');
+                    if (fusionBtn) fusionBtn.setAttribute('aria-expanded', showSharePoint ? 'false' : 'true');
+                };
+                const getSelectedFusionFullscreen = () => {
+                    return document.getElementById('ship-fusion-fullscreen-toggle')?.checked !== false;
+                };
 	            $('#ship-now-btn').on('click', () => {
+                    resetShipChoiceSubOptions();
 	                const modal = new bootstrap.Modal(document.getElementById('ship-choice-modal'));
 	                modal.show();
 	            });
                 document.getElementById('ship-choice-modal')?.addEventListener('show.bs.modal', () => {
+                    resetShipChoiceSubOptions();
                     compiler.refreshShipVersionPreview().catch((err) => {
                         console.warn('Could not refresh ship version preview:', err);
                     });
@@ -5802,6 +5958,9 @@ Now answer the user's Forge question with exact steps and rationale.</textarea>
 	                });
 	            });
 	            $('#ship-sharepoint-btn').on('click', () => {
+                    showShipChoiceSubOptions('sharepoint');
+	            });
+	            $('#ship-flankspeed-sharepoint-btn').on('click', () => {
 	                bootstrap.Modal.getInstance(document.getElementById('ship-choice-modal'))?.hide();
 	                compiler.startCompilation({
 	                    forceInlineCdnChecked: true,
@@ -5813,24 +5972,32 @@ Now answer the user's Forge question with exact steps and rationale.</textarea>
                         shipReleaseType: compiler.getSelectedShipReleaseType()
 	                });
 	            });
-	            $('#ship-fusion-wiki-btn').on('click', () => {
+	            $('#ship-fusion-options-btn').on('click', () => {
+                    showShipChoiceSubOptions('fusion');
+	            });
+	            $('#ship-fusion-copy-paste-btn').on('click', () => {
 	                bootstrap.Modal.getInstance(document.getElementById('ship-choice-modal'))?.hide();
+                    const useFullscreen = getSelectedFusionFullscreen();
 	                compiler.startCompilation({
 	                    forceInlineCdnChecked: true,
-	                    forceNoSecurityHeaders: true,
+	                    forceSecurityHeadersChecked: true,
 	                    navigateToCompilerOnWarning: false,
 	                    navigateToCompilerOnMissing: false,
 	                    saveToShippedApps: true,
-                        shipTarget: 'fusion-wiki',
+                        shipTarget: useFullscreen ? 'fusion-wiki-fullscreen' : 'fusion-wiki',
                         shipReleaseType: compiler.getSelectedShipReleaseType(),
                         copyToClipboardAfterSave: true,
-                        fusionBridgeMode: true,
-                        shipSavedModalTitle: 'Fusion Wiki Code Copied',
-                        clipboardSuccessMessage: 'The shipped code has been copied to your clipboard. Paste it into the Fusion HTML macro.',
+                        fusionBridgeMode: !useFullscreen,
+                        wrapFusionFullscreenIframe: useFullscreen,
+                        shipSavedModalTitle: useFullscreen ? 'Fusion Copy/Paste Fullscreen Code Copied' : 'Fusion Copy/Paste Code Copied',
+                        clipboardSuccessMessage: useFullscreen
+                            ? 'The secured fullscreen shipped code has been copied to your clipboard. Paste it into the Fusion HTML macro.'
+                            : 'The secured shipped code has been copied to your clipboard. Paste it into the Fusion HTML macro.',
                         clipboardFailureMessage: 'The shipped file was saved, but Forge could not copy it automatically. Open the saved file in Shipped Apps and copy the full HTML before pasting into Fusion.',
                         deploymentInstructionsHtml: `
                             <div class="p-3 mb-3" style="background:#102032; border:1px solid #2563eb; border-radius:10px;">
-                                <div class="small text-uppercase text-info mb-2" style="letter-spacing:0.04em;">Paste Into Fusion</div>
+                                <div class="small text-uppercase text-info mb-2" style="letter-spacing:0.04em;">Copy/Paste Fusion Deployment</div>
+                                <p class="mb-2">This deployment includes Forge's Fusion security wrapper.</p>
                                 <ol class="mb-0">
                                     <li>Create a space.</li>
                                     <li>Press <strong>Create</strong> at the top to create a page.</li>
@@ -5845,34 +6012,33 @@ Now answer the user's Forge question with exact steps and rationale.</textarea>
                         `
 	                });
 	            });
-	            $('#ship-fusion-wiki-fullscreen-btn').on('click', () => {
+	            $('#ship-fusion-firepit-btn').on('click', () => {
 	                bootstrap.Modal.getInstance(document.getElementById('ship-choice-modal'))?.hide();
+                    const useFullscreen = getSelectedFusionFullscreen();
 	                compiler.startCompilation({
 	                    forceInlineCdnChecked: true,
 	                    forceNoSecurityHeaders: true,
 	                    navigateToCompilerOnWarning: false,
 	                    navigateToCompilerOnMissing: false,
 	                    saveToShippedApps: true,
-                        shipTarget: 'fusion-wiki-fullscreen',
+                        shipTarget: 'fusion-wiki-file-list',
                         shipReleaseType: compiler.getSelectedShipReleaseType(),
                         copyToClipboardAfterSave: true,
-                        wrapFusionFullscreenIframe: true,
-                        shipSavedModalTitle: 'Fusion Fullscreen Code Copied',
-                        clipboardSuccessMessage: 'The fullscreen iframe-wrapped shipped code has been copied to your clipboard. Paste it into the Fusion HTML macro.',
-                        clipboardFailureMessage: 'The fullscreen shipped file was saved, but Forge could not copy it automatically. Open the saved file in Shipped Apps and copy the full HTML before pasting into Fusion.',
+                        copyFusionFirepitRendererToClipboard: true,
+                        fusionFirepitFullscreen: useFullscreen,
+                        shipSavedModalTitle: useFullscreen ? 'Fusion Firepit Fullscreen Renderer Copied' : 'Fusion Firepit Renderer Copied',
+                        clipboardSuccessMessage: 'The fusion-firepit.html renderer has been copied to your clipboard. Paste it into the Fusion HTML macro, then point it at the uploaded app HTML file.',
+                        clipboardFailureMessage: 'The shipped app file was saved, and Forge generated the Firepit renderer, but the browser blocked clipboard copy. Try Firepit Deployment again or use a browser context that permits clipboard access.',
                         deploymentInstructionsHtml: `
                             <div class="p-3 mb-3" style="background:#102032; border:1px solid #2563eb; border-radius:10px;">
-                                <div class="small text-uppercase text-info mb-2" style="letter-spacing:0.04em;">Paste Fullscreen Wrapper Into Fusion</div>
-                                <p class="mb-2">This version uses Forge's isolated iframe bridge. Its child Content Security Policy allows connections only to the same Fusion host and CAPRA.</p>
+                                <div class="small text-uppercase text-info mb-2" style="letter-spacing:0.04em;">Fusion Firepit Deployment</div>
+                                <p class="mb-2">This deployment saves the app without Forge's copy/paste security wrapper because Firepit provides the host security wrapper.</p>
                                 <ol class="mb-0">
-                                    <li>Create a space.</li>
-                                    <li>Press <strong>Create</strong> at the top to create a page.</li>
-                                    <li>Press the <strong>+</strong> sign.</li>
-                                    <li>Select <strong>Other macros</strong>.</li>
-                                    <li>Search for <strong>html</strong>.</li>
-                                    <li>Select <strong>HTML</strong>.</li>
-                                    <li>Press <strong>Insert</strong>.</li>
-                                    <li>Paste the copied fullscreen wrapper code into the HTML area.</li>
+                                    <li>Upload the saved <code>-current.html</code> app file from <code>Shipped Apps</code> to the Fusion page file list or attachments area.</li>
+                                    <li>Copy the uploaded HTML file link.</li>
+                                    <li>Add an <strong>HTML</strong> macro to the Fusion page.</li>
+                                    <li>Paste the copied <code>fusion-firepit.html</code> renderer code into the HTML macro and publish the page.</li>
+                                    <li>Paste the uploaded app file link into <strong>HTML file link</strong> and press <strong>Render App</strong>. The renderer saves the link in the page properties.</li>
                                 </ol>
                             </div>
                         `

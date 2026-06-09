@@ -1,0 +1,990 @@
+<!--WFC-MANIFEST:eyJ2ZXJzaW9uIjoxLCJwcm9qZWN0Ijoid2F0Y2hiaWxsIiwiZ2VuZXJhdGVkIjoiMjAyNi0wNi0wOVQxNTo0NjozNy41MjVaIiwiaW5kZXgiOiJpbmRleC5odG1sIiwiZmlsZXMiOltdfQ==-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navy Watchbill Manager</title>
+    <style>
+        :root {
+            --nwb-navy-blue: #002147;
+            --nwb-navy-gold: #c5b358;
+            --nwb-light-gray: #f4f4f4;
+            --nwb-border-color: #333;
+            --nwb-text-color: #222;
+            --nwb-accent-green: #2e7d32;
+        }
+
+        #nwb-app-root { 
+            box-sizing: border-box; 
+            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--nwb-light-gray); 
+            color: var(--nwb-text-color); 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+        }
+        #nwb-app-root * { box-sizing: border-box; }
+
+        /* Header & Nav */
+        #nwb-header { 
+            background: var(--nwb-navy-blue); 
+            color: white; 
+            padding: 1rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 4px solid var(--nwb-navy-gold); 
+            flex-wrap: wrap; 
+            gap: 10px; 
+        }
+        .nwb-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+        .nwb-btn { 
+            cursor: pointer; 
+            padding: 8px 15px; 
+            border: none; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            transition: opacity 0.2s; 
+            font-size: 0.8rem; 
+        }
+        .nwb-btn:hover { opacity: 0.9; }
+        .nwb-btn-primary { background: var(--nwb-navy-gold); color: var(--nwb-navy-blue); }
+        .nwb-btn-success { background: var(--nwb-accent-green); color: white; }
+        .nwb-btn-secondary { background: #555; color: white; }
+        .nwb-btn-danger { background: #b22222; color: white; }
+
+        /* Main Layout */
+        .nwb-main { display: grid; grid-template-columns: 280px 1fr; gap: 20px; padding: 20px; flex-grow: 1; }
+
+        /* Sidebar - Personnel & Config */
+        .nwb-sidebar { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            border: 1px solid #ddd; 
+            height: fit-content; 
+        }
+        .nwb-sidebar-section { margin-bottom: 25px; }
+        .nwb-sidebar-section h2 { 
+            font-size: 1.1rem; 
+            border-bottom: 2px solid var(--nwb-navy-blue); 
+            padding-bottom: 5px; 
+            margin-top: 0; 
+            color: var(--nwb-navy-blue);
+        }
+        
+        .nwb-roster-item { 
+            background: #eee; 
+            padding: 8px; 
+            margin: 5px 0; 
+            border-radius: 4px; 
+            cursor: grab; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-left: 4px solid var(--nwb-navy-blue); 
+            font-size: 0.9rem;
+            color: #222;
+        }
+        .nwb-roster-item:active { cursor: grabbing; opacity: 0.5; }
+        .nwb-del-btn { color: #888; cursor: pointer; font-weight: bold; margin-left: 10px; }
+        .nwb-del-btn:hover { color: red; }
+
+        /* Watchbill Grid */
+        .nwb-watchbill-container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            overflow-x: auto; 
+        }
+        .nwb-watchbill-container h2 { 
+            font-size: 1.2rem; 
+            color: var(--nwb-navy-blue); 
+            margin-top: 0; 
+        }
+        .nwb-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .nwb-th, .nwb-td { border: 1px solid var(--nwb-border-color); padding: 8px; text-align: center; font-size: 0.85rem; height: 55px; }
+        .nwb-th { background-color: #e9ecef; color: var(--nwb-navy-blue); }
+        .nwb-time-col { width: 110px; font-weight: bold; background: #f9f9f9; }
+
+        .nwb-drop-zone { min-height: 45px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .nwb-drop-zone.nwb-drag-over { background-color: rgba(197, 179, 88, 0.2); }
+        .nwb-assigned-person { 
+            background: var(--nwb-navy-blue); 
+            color: white; 
+            border-radius: 3px; 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            font-size: 0.75rem; 
+            position: relative; 
+            padding: 2px;
+        }
+        .nwb-assigned-person .nwb-rank-name { font-weight: bold; }
+        .nwb-remove-assignment { position: absolute; top: 0; right: 4px; cursor: pointer; color: #aaa; font-size: 14px; }
+        .nwb-remove-assignment:hover { color: white; }
+
+        .nwb-input, .nwb-select { width: 100%; padding: 6px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+
+        /* Confluence Integration UI */
+        .navy-status-badge {
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            display: inline-block;
+        }
+        .navy-status-badge.live {
+            background-color: var(--nwb-accent-green);
+            border-color: #4caf50;
+        }
+        .navy-status-badge.saving {
+            background-color: #f39c12;
+            border-color: #f1c40f;
+        }
+        .navy-status-badge.error {
+            background-color: #b22222;
+            border-color: #e74c3c;
+        }
+        .navy-status-badge.offline {
+            background-color: #7f8c8d;
+            border-color: #95a5a6;
+        }
+        .presence-avatar {
+            background: var(--nwb-navy-gold);
+            color: var(--nwb-navy-blue);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: help;
+            border: 1px solid white;
+        }
+
+        @media print {
+            #nwb-header, .nwb-sidebar, .nwb-controls, .nwb-del-btn, .nwb-remove-assignment, #navy-sync-status, #navy-presence-list { display: none !important; }
+            .nwb-main { display: block; padding: 0; }
+            .nwb-watchbill-container { box-shadow: none; border: none; padding: 0; }
+            .nwb-table { border: 2px solid black; width: 100%; }
+            .nwb-th, .nwb-td { border: 1px solid black !important; color: black !important; }
+            .nwb-assigned-person { background: none !important; color: black !important; }
+        }
+    </style>
+</head>
+<body style="margin:0; padding:0;">
+<div id="nwb-app-root">
+    <header id="nwb-header">
+        <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+            <h1 style="margin:0; font-size:1.4rem;">NAVY WATCHBILL</h1>
+            <div id="navy-sync-status" class="navy-status-badge">Connecting...</div>
+            <div id="navy-presence-list" style="font-size:0.8rem; display:flex; gap:8px; align-items:center;"></div>
+        </div>
+        <div class="nwb-controls">
+            <button id="nwb-btn-auto-assign" class="nwb-btn nwb-btn-success" type="button">Auto-Assign</button>
+            <button id="nwb-btn-print" class="nwb-btn nwb-btn-primary" type="button">Print Bill</button>
+            <button id="nwb-btn-export" class="nwb-btn nwb-btn-secondary" type="button">Export</button>
+            <button id="nwb-btn-import" class="nwb-btn nwb-btn-secondary" type="button">Import</button>
+            <input type="file" id="importFile" style="display:none">
+            <button id="nwb-btn-clear" class="nwb-btn nwb-btn-danger" type="button">Clear</button>
+        </div>
+    </header>
+
+    <main class="nwb-main">
+        <aside class="nwb-sidebar">
+            <div class="nwb-sidebar-section">
+                <h2>Add Personnel</h2>
+                <input type="text" id="pRank" class="nwb-input" placeholder="Rank (e.g. ET2)">
+                <input type="text" id="pName" class="nwb-input" placeholder="Last Name">
+                <button id="nwb-btn-add-person" class="nwb-btn nwb-btn-primary" style="width:100%" type="button">Add to Roster</button>
+            </div>
+
+            <div class="nwb-sidebar-section">
+                <h2>Stations</h2>
+                <div id="stationList"></div>
+                <input type="text" id="newStation" class="nwb-input" placeholder="Station Name">
+                <button id="nwb-btn-add-station" class="nwb-btn nwb-btn-secondary" style="width:100%; margin-top:5px" type="button">Add Station</button>
+            </div>
+
+            <div class="nwb-sidebar-section">
+                <h2>Roster</h2>
+                <div id="rosterList"></div>
+            </div>
+        </aside>
+
+        <div class="nwb-watchbill-container">
+            <h2 id="billTitle">WATCHBILL: <span id="currentDate"></span></h2>
+            <table id="watchGrid" class="nwb-table">
+                <thead>
+                    <tr id="headerRow">
+                        <th class="nwb-th nwb-time-col">TIME</th>
+                    </tr>
+                </thead>
+                <tbody id="gridBody"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script>
+    // --- State Model ---
+    let state = {
+        schema: "2.0",
+        updatedAt: new Date().toISOString(),
+        updatedBy: "System",
+        personnel: [], 
+        stations: ["OOD", "POOW", "MOOW"],
+        assignments: {}, // "tIdx-sIdx": personId
+        date: new Date().toLocaleDateString(),
+        people: {} // Client Presence map: { clientId: { name, lastSeen } }
+    };
+
+    const WATCH_TIMES = [
+        "0000 - 0400", "0400 - 0800", "0800 - 1200", "1200 - 1600",
+        "1600 - 1800", "1800 - 2000", "2000 - 2400"
+    ];
+
+    // --- Configuration Details ---
+    const PROPERTY_KEY = "navy-watchbill-manager-state-v2";
+    const PRESENCE_SAVE_INTERVAL = 30000; // Broadcast presence every 30 seconds
+
+    let currentPropertyVersion = 0;
+    let hasUnsavedChanges = false;
+    let isSaving = false;
+    let isPolling = false;
+    let saveTimeout = null;
+    let lastPresenceSaveTime = 0;
+
+    // --- Confluence Context & Utility Helpers ---
+    function meta(name) {
+        const escaped = cssEscape(name);
+        const metaTag = document.querySelector(`meta[name="${escaped}"], meta[id="${escaped}"]`);
+        return metaTag ? metaTag.getAttribute('content') : null;
+    }
+
+    function cssEscape(value) {
+        if (typeof CSS !== 'undefined' && CSS.escape) {
+            return CSS.escape(value);
+        }
+        return value.replace(/([!"#$%&'()*+,.\/:;<=>?@\[\\\]^`{|}~])/g, '\\$1');
+    }
+
+    function getConfluenceContext() {
+        let pageId = null;
+        let baseUrl = '';
+        let currentUser = 'Guest User';
+        let currentUserKey = 'guest';
+
+        if (window.AJS && window.AJS.Meta) {
+            pageId = window.AJS.Meta.get('page-id') || window.AJS.Meta.get('content-id');
+            baseUrl = window.AJS.Meta.get('base-url') || window.location.origin;
+            currentUser = window.AJS.Meta.get('remote-user-friendly-name') || window.AJS.Meta.get('remote-user') || window.AJS.Meta.get('current-user-fullname') || 'Unknown User';
+            currentUserKey = window.AJS.Meta.get('remote-user-key') || window.AJS.Meta.get('remote-user') || 'unknown';
+        } else {
+            pageId = meta('ajs-page-id') || meta('ajs-content-id') || meta('page-id');
+            baseUrl = meta('ajs-base-url') || window.location.origin;
+            currentUser = meta('ajs-remote-user-fullname') || meta('ajs-current-user-fullname') || meta('ajs-remote-user') || 'Unknown User';
+            currentUserKey = meta('ajs-remote-user-key') || meta('ajs-remote-user') || 'unknown';
+        }
+
+        if (pageId) {
+            pageId = pageId.trim();
+        }
+
+        return {
+            pageId,
+            baseUrl,
+            currentUser,
+            currentUserKey,
+            isConfluence: !!pageId
+        };
+    }
+
+    async function confluenceFetch(path, options = {}) {
+        const context = getConfluenceContext();
+        if (!context.isConfluence) {
+            throw new Error("Not running inside Confluence.");
+        }
+        
+        let url = path;
+        if (!path.startsWith('http://') && !path.startsWith('https://')) {
+            const base = context.baseUrl.replace(/\/$/, '');
+            const relative = path.startsWith('/') ? path : '/' + path;
+            url = base + relative;
+        }
+
+        const defaultHeaders = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        };
+
+        const mergedOptions = {
+            credentials: 'same-origin',
+            ...options,
+            headers: {
+                ...defaultHeaders,
+                ...options.headers
+            }
+        };
+
+        return await fetch(url, mergedOptions);
+    }
+
+    async function parseJsonResponse(response) {
+        if (!response.ok) {
+            let errorMsg = `HTTP Error ${response.status}`;
+            try {
+                const errObj = await response.json();
+                if (errObj && errObj.message) {
+                    errorMsg += `: ${errObj.message}`;
+                }
+            } catch(e) {}
+            throw new Error(errorMsg);
+        }
+        return await response.json();
+    }
+
+    // --- Content Property Service Requests ---
+    async function getProperty() {
+        const context = getConfluenceContext();
+        const path = `/rest/api/content/${context.pageId}/property/${PROPERTY_KEY}?expand=version`;
+        try {
+            const response = await confluenceFetch(path, { method: 'GET' });
+            if (response.status === 404) {
+                return null;
+            }
+            const data = await parseJsonResponse(response);
+            if (data && data.version) {
+                currentPropertyVersion = data.version.number;
+            }
+            return data;
+        } catch (error) {
+            console.error("Failed to fetch property:", error);
+            throw error;
+        }
+    }
+
+    async function createProperty(value) {
+        const context = getConfluenceContext();
+        const path = `/rest/api/content/${context.pageId}/property`;
+        const payload = {
+            key: PROPERTY_KEY,
+            value: value
+        };
+        const response = await confluenceFetch(path, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        const data = await parseJsonResponse(response);
+        if (data && data.version) {
+            currentPropertyVersion = data.version.number;
+        }
+        return data;
+    }
+
+    async function updateProperty(value, nextVersion) {
+        const context = getConfluenceContext();
+        const path = `/rest/api/content/${context.pageId}/property/${PROPERTY_KEY}`;
+        const payload = {
+            value: value,
+            version: {
+                number: nextVersion,
+                minorEdit: true
+            }
+        };
+        const response = await confluenceFetch(path, {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+        });
+        const data = await parseJsonResponse(response);
+        if (data && data.version) {
+            currentPropertyVersion = data.version.number;
+        }
+        return data;
+    }
+
+    async function getWritableProperty() {
+        let prop = await getProperty();
+        if (!prop) {
+            const emptyStore = createEmptyStore();
+            const context = getConfluenceContext();
+            emptyStore.updatedBy = context.currentUser;
+            prop = await createProperty(emptyStore);
+        }
+        return prop;
+    }
+
+    function createEmptyStore() {
+        return {
+            schema: "2.0",
+            updatedAt: new Date().toISOString(),
+            updatedBy: "System",
+            personnel: [],
+            stations: ["OOD", "POOW", "MOOW"],
+            assignments: {},
+            date: new Date().toLocaleDateString(),
+            people: {}
+        };
+    }
+
+    function normalizeStore(storedValue) {
+        if (!storedValue || typeof storedValue !== 'object') {
+            return createEmptyStore();
+        }
+        return {
+            schema: storedValue.schema || "2.0",
+            updatedAt: storedValue.updatedAt || new Date().toISOString(),
+            updatedBy: storedValue.updatedBy || "Unknown",
+            personnel: Array.isArray(storedValue.personnel) ? storedValue.personnel : [],
+            stations: Array.isArray(storedValue.stations) ? storedValue.stations : ["OOD", "POOW", "MOOW"],
+            assignments: (storedValue.assignments && typeof storedValue.assignments === 'object') ? storedValue.assignments : {},
+            date: storedValue.date || new Date().toLocaleDateString(),
+            people: (storedValue.people && typeof storedValue.people === 'object') ? storedValue.people : {}
+        };
+    }
+
+    // --- State Synchronization ---
+    function save() {
+        const context = getConfluenceContext();
+        if (!context.isConfluence) {
+            localStorage.setItem('navyWatchbillStateV2', JSON.stringify(state));
+            return;
+        }
+
+        hasUnsavedChanges = true;
+        triggerDebouncedSave();
+    }
+
+    function triggerDebouncedSave() {
+        updateSyncStatus("Saving...");
+        if (saveTimeout) clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(async () => {
+            try {
+                await performSave();
+            } catch (error) {
+                console.error("Save failed:", error);
+                updateSyncStatus("Save failed", error.message);
+            }
+        }, 600); // 600ms debounce
+    }
+
+    async function performSave() {
+        if (isSaving) {
+            triggerDebouncedSave();
+            return;
+        }
+        isSaving = true;
+
+        const context = getConfluenceContext();
+        if (!context.isConfluence) {
+            isSaving = false;
+            return;
+        }
+
+        const maxRetries = 4;
+        let attempt = 0;
+        let saved = false;
+
+        prunePresence(state);
+        state.updatedAt = new Date().toISOString();
+        state.updatedBy = context.currentUser;
+
+        while (attempt < maxRetries && !saved) {
+            try {
+                if (currentPropertyVersion === 0) {
+                    await getWritableProperty();
+                }
+
+                await updateProperty(state, currentPropertyVersion + 1);
+                saved = true;
+                hasUnsavedChanges = false;
+                updateSyncStatus("Saved");
+            } catch (error) {
+                attempt++;
+                if (error.message.includes("409") || error.status === 409) {
+                    console.warn(`Version conflict on attempt ${attempt}. Re-fetching property...`);
+                    await getWritableProperty();
+                } else if (error.message.includes("401") || error.message.includes("403")) {
+                    updateSyncStatus("Save failed", "Permissions issue: You may not have edit permissions for page properties.");
+                    isSaving = false;
+                    return;
+                } else {
+                    console.error(`Error during save attempt ${attempt}:`, error);
+                    if (attempt >= maxRetries) {
+                        throw error;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+        }
+
+        isSaving = false;
+    }
+
+    async function pollConfluence() {
+        if (isPolling) return;
+        isPolling = true;
+
+        const context = getConfluenceContext();
+        if (!context.isConfluence) {
+            isPolling = false;
+            return;
+        }
+
+        try {
+            await updatePresenceAndPoll();
+        } catch (error) {
+            console.error("Polling error:", error);
+        } finally {
+            isPolling = false;
+        }
+    }
+
+    async function updatePresenceAndPoll() {
+        const prop = await getProperty();
+        if (!prop) {
+            await getWritableProperty();
+            updateSyncStatus("Live on Confluence");
+            return;
+        }
+
+        const remoteStore = normalizeStore(prop.value);
+        const clientId = getOrCreateClientId();
+        const context = getConfluenceContext();
+        const now = Date.now();
+
+        // Merge remote presence with local presence tracking
+        state.people = { ...remoteStore.people, ...state.people };
+        prunePresence(state);
+
+        // Record our own activity
+        state.people[clientId] = {
+            name: context.currentUser,
+            lastSeen: new Date().toISOString()
+        };
+
+        // Pull latest state from Confluence if a newer version exists and we are not editing
+        if (prop.version.number > currentPropertyVersion) {
+            if (!hasUnsavedChanges && !isSaving) {
+                state = remoteStore;
+                state.people[clientId] = {
+                    name: context.currentUser,
+                    lastSeen: new Date().toISOString()
+                };
+                currentPropertyVersion = prop.version.number;
+                renderAll();
+            }
+        }
+
+        // Broadcast presence if we have been active and 30s have elapsed since the last presence broadcast
+        if (!hasUnsavedChanges && !isSaving && (now - lastPresenceSaveTime > PRESENCE_SAVE_INTERVAL)) {
+            lastPresenceSaveTime = now;
+            hasUnsavedChanges = true;
+            triggerDebouncedSave();
+        } else {
+            renderPresenceUI();
+            updateSyncStatus("Live on Confluence");
+        }
+    }
+
+    function prunePresence(storeInstance) {
+        if (!storeInstance.people) {
+            storeInstance.people = {};
+            return;
+        }
+        const now = Date.now();
+        const ninetySecondsAgo = now - 90000;
+        for (const id in storeInstance.people) {
+            const lastSeenStr = storeInstance.people[id].lastSeen;
+            if (!lastSeenStr || Date.parse(lastSeenStr) < ninetySecondsAgo) {
+                delete storeInstance.people[id];
+            }
+        }
+    }
+
+    function getOrCreateClientId() {
+        let clientId = localStorage.getItem('navy_watchbill_client_id');
+        if (!clientId) {
+            clientId = 'c_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            localStorage.setItem('navy_watchbill_client_id', clientId);
+        }
+        return clientId;
+    }
+
+    function updateSyncStatus(statusText, errorDetails = null) {
+        const badge = document.getElementById('navy-sync-status');
+        if (!badge) return;
+        
+        badge.textContent = statusText;
+        badge.className = 'navy-status-badge'; 
+        
+        if (statusText === 'Live on Confluence' || statusText === 'Saved') {
+            badge.classList.add('live');
+            badge.title = errorDetails ? errorDetails : `Synced version ${currentPropertyVersion}`;
+        } else if (statusText === 'Saving...') {
+            badge.classList.add('saving');
+            badge.title = 'Uploading watchbill changes...';
+        } else if (statusText.includes('failed') || statusText.includes('Error')) {
+            badge.classList.add('error');
+            badge.title = errorDetails || 'An error occurred during sync.';
+        } else if (statusText === 'Offline Mode') {
+            badge.classList.add('offline');
+            badge.title = 'Running outside Confluence (LocalStorage only)';
+        }
+    }
+
+    function renderPresenceUI() {
+        const listEl = document.getElementById('navy-presence-list');
+        if (!listEl) return;
+        listEl.innerHTML = '';
+
+        if (!state.people) return;
+
+        const activeUsers = Object.values(state.people);
+        if (activeUsers.length <= 1) {
+            return;
+        }
+
+        const label = document.createElement('span');
+        label.textContent = "Active on Page:";
+        label.style.fontWeight = 'bold';
+        listEl.appendChild(label);
+
+        const container = document.createElement('div');
+        container.style.display = 'flex';
+        container.style.gap = '4px';
+
+        activeUsers.forEach(user => {
+            const avatar = document.createElement('div');
+            avatar.className = 'presence-avatar';
+            const initials = user.name ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '?';
+            avatar.textContent = initials;
+            avatar.title = user.name;
+            container.appendChild(avatar);
+        });
+
+        listEl.appendChild(container);
+    }
+
+    // --- Core UI & Roster Logic (Unsafe dynamic template insertions replaced) ---
+    function autoAssign() {
+        if (state.personnel.length === 0) return alert("Add personnel to the roster first.");
+        
+        state.assignments = {};
+
+        const watchCounts = {};
+        state.personnel.forEach(p => watchCounts[p.id] = 0);
+
+        WATCH_TIMES.forEach((time, tIdx) => {
+            state.stations.forEach((station, sIdx) => {
+                
+                let candidates = state.personnel.filter(p => {
+                    const alreadyOnThisSlot = Object.keys(state.assignments).some(key => 
+                        key.startsWith(`${tIdx}-`) && state.assignments[key] === p.id
+                    );
+                    return !alreadyOnThisSlot;
+                });
+
+                let nonBackToBack = candidates.filter(p => {
+                    if (tIdx === 0) return true;
+                    const prevSlotKeyPrefix = `${tIdx - 1}-`;
+                    const wasOnLastSlot = Object.keys(state.assignments).some(key => 
+                        key.startsWith(prevSlotKeyPrefix) && state.assignments[key] === p.id
+                    );
+                    return !wasOnLastSlot;
+                });
+
+                let selectionPool = (nonBackToBack.length > 0) ? nonBackToBack : candidates;
+
+                selectionPool.sort((a, b) => {
+                    const countDiff = watchCounts[a.id] - watchCounts[b.id];
+                    return countDiff !== 0 ? countDiff : Math.random() - 0.5;
+                });
+
+                if (selectionPool.length > 0) {
+                    const chosen = selectionPool[0];
+                    state.assignments[`${tIdx}-${sIdx}`] = chosen.id;
+                    watchCounts[chosen.id]++;
+                }
+            });
+        });
+
+        save();
+        renderGrid();
+    }
+
+    function renderAll() {
+        renderRoster();
+        renderStations();
+        renderGrid();
+    }
+
+    function renderRoster() {
+        const list = document.getElementById('rosterList');
+        list.innerHTML = '';
+        state.personnel.sort((a, b) => a.name.localeCompare(b.name)).forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'nwb-roster-item';
+            div.draggable = true;
+            
+            const textSpan = document.createElement('span');
+            textSpan.textContent = `${p.rank} ${p.name}`;
+            div.appendChild(textSpan);
+            
+            const delSpan = document.createElement('span');
+            delSpan.className = 'nwb-del-btn';
+            delSpan.textContent = '×';
+            delSpan.addEventListener('click', () => deletePerson(p.id));
+            div.appendChild(delSpan);
+
+            div.ondragstart = (e) => e.dataTransfer.setData('personId', p.id);
+            list.appendChild(div);
+        });
+    }
+
+    function renderStations() {
+        const list = document.getElementById('stationList');
+        list.innerHTML = '';
+        state.stations.forEach((s, idx) => {
+            const div = document.createElement('div');
+            div.style.display = 'flex';
+            div.style.justifyContent = 'space-between';
+            div.style.marginBottom = '4px';
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.style.fontSize = '0.9rem';
+            nameSpan.textContent = s;
+            div.appendChild(nameSpan);
+            
+            const delSpan = document.createElement('span');
+            delSpan.className = 'nwb-del-btn';
+            delSpan.textContent = '×';
+            delSpan.addEventListener('click', () => deleteStation(idx));
+            div.appendChild(delSpan);
+            
+            list.appendChild(div);
+        });
+    }
+
+    function renderGrid() {
+        const headerRow = document.getElementById('headerRow');
+        const gridBody = document.getElementById('gridBody');
+        headerRow.innerHTML = '';
+        
+        const timeTh = document.createElement('th');
+        timeTh.className = 'nwb-th nwb-time-col';
+        timeTh.textContent = 'TIME';
+        headerRow.appendChild(timeTh);
+        
+        state.stations.forEach(s => {
+            const th = document.createElement('th');
+            th.className = 'nwb-th';
+            th.textContent = s;
+            headerRow.appendChild(th);
+        });
+
+        gridBody.innerHTML = '';
+        WATCH_TIMES.forEach((time, tIdx) => {
+            const tr = document.createElement('tr');
+            
+            const timeTd = document.createElement('td');
+            timeTd.className = 'nwb-td nwb-time-col';
+            timeTd.textContent = time;
+            tr.appendChild(timeTd);
+            
+            state.stations.forEach((s, sIdx) => {
+                const td = document.createElement('td');
+                td.className = 'nwb-td nwb-drop-zone';
+                const key = `${tIdx}-${sIdx}`;
+                const assignedId = state.assignments[key];
+                
+                if (assignedId) {
+                    const person = state.personnel.find(p => p.id === assignedId);
+                    if (person) {
+                        const card = document.createElement('div');
+                        card.className = 'nwb-assigned-person';
+                        
+                        const textSpan = document.createElement('span');
+                        textSpan.className = 'nwb-rank-name';
+                        textSpan.textContent = `${person.rank} ${person.name}`;
+                        card.appendChild(textSpan);
+                        
+                        const removeSpan = document.createElement('span');
+                        removeSpan.className = 'nwb-remove-assignment';
+                        removeSpan.textContent = '×';
+                        removeSpan.addEventListener('click', () => removeAssignment(key));
+                        card.appendChild(removeSpan);
+                        
+                        td.appendChild(card);
+                    }
+                }
+
+                td.ondragover = (e) => { e.preventDefault(); td.classList.add('nwb-drag-over'); };
+                td.ondragleave = () => td.classList.remove('nwb-drag-over');
+                td.ondrop = (e) => {
+                    e.preventDefault();
+                    td.classList.remove('nwb-drag-over');
+                    const personId = e.dataTransfer.getData('personId');
+                    state.assignments[key] = personId;
+                    save(); renderGrid();
+                };
+                tr.appendChild(td);
+            });
+            gridBody.appendChild(tr);
+        });
+    }
+
+    // --- Interactive Event Handlers ---
+    function addPerson() {
+        const name = document.getElementById('pName').value.trim();
+        const rank = document.getElementById('pRank').value.trim();
+        if (!name || !rank) return;
+        state.personnel.push({ id: 'p' + Date.now(), name, rank });
+        document.getElementById('pName').value = '';
+        document.getElementById('pRank').value = '';
+        save(); renderRoster();
+    }
+
+    function deletePerson(id) {
+        state.personnel = state.personnel.filter(p => p.id !== id);
+        save(); renderAll();
+    }
+
+    function addStation() {
+        const s = document.getElementById('newStation').value.trim();
+        if (s) { state.stations.push(s); save(); renderAll(); }
+        document.getElementById('newStation').value = '';
+    }
+
+    function deleteStation(idx) {
+        state.stations.splice(idx, 1);
+        state.assignments = {}; // Reset to prevent index mismatch
+        save(); renderAll();
+    }
+
+    function removeAssignment(key) {
+        delete state.assignments[key];
+        save(); renderGrid();
+    }
+
+    function clearAll() {
+        if (confirm("Reset everything?")) {
+            state.personnel = []; state.assignments = {};
+            save(); renderAll();
+        }
+    }
+
+    function exportData() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+        const dlAnchor = document.createElement('a');
+        dlAnchor.setAttribute("href", dataStr);
+        dlAnchor.setAttribute("download", "watchbill.json");
+        dlAnchor.click();
+    }
+
+    function importData(input) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                state = normalizeStore(JSON.parse(e.target.result));
+                save(); renderAll();
+            } catch (err) {
+                alert("Invalid configuration file: " + err.message);
+            }
+        };
+        reader.readAsText(input.files[0]);
+    }
+
+    // --- Application Initialization & Setup ---
+    async function init() {
+        // Prevent double initialization
+        const root = document.getElementById('nwb-app-root');
+        if (!root) return;
+        if (root.dataset.ready) {
+            console.warn("App already initialized.");
+            return;
+        }
+        root.dataset.ready = "true";
+
+        // Bind interactive event listeners (eliminates inline onclicks, resolving CSP issues)
+        document.getElementById('nwb-btn-auto-assign').addEventListener('click', autoAssign);
+        document.getElementById('nwb-btn-print').addEventListener('click', () => window.print());
+        document.getElementById('nwb-btn-export').addEventListener('click', exportData);
+        document.getElementById('nwb-btn-import').addEventListener('click', () => document.getElementById('importFile').click());
+        document.getElementById('importFile').addEventListener('change', function() { importData(this); });
+        document.getElementById('nwb-btn-clear').addEventListener('click', clearAll);
+        document.getElementById('nwb-btn-add-person').addEventListener('click', addPerson);
+        document.getElementById('nwb-btn-add-station').addEventListener('click', addStation);
+
+        const context = getConfluenceContext();
+        if (context.isConfluence) {
+            updateSyncStatus("Connecting...");
+            try {
+                const prop = await getWritableProperty();
+                if (prop && prop.value) {
+                    state = normalizeStore(prop.value);
+                } else {
+                    state = createEmptyStore();
+                }
+                document.getElementById('currentDate').innerText = state.date;
+                renderAll();
+                updateSyncStatus("Live on Confluence");
+
+                // Start synchronizing via polling (2.5 seconds)
+                setInterval(pollConfluence, 2500);
+            } catch (error) {
+                console.error("Initialization failed:", error);
+                updateSyncStatus("Save failed", "Failed to connect to Confluence REST API: " + error.message);
+                
+                // Fall back gracefully to LocalStorage operation
+                loadFromLocalStorage();
+            }
+        } else {
+            // Operate in Local Mode
+            loadFromLocalStorage();
+            updateSyncStatus("Offline Mode");
+        }
+    }
+
+    function loadFromLocalStorage() {
+        const saved = localStorage.getItem('navyWatchbillStateV2');
+        if (saved) {
+            try {
+                state = normalizeStore(JSON.parse(saved));
+            } catch (e) {
+                console.error("Failed to parse LocalStorage payload:", e);
+                state = createEmptyStore();
+            }
+        } else {
+            state = createEmptyStore();
+        }
+        document.getElementById('currentDate').innerText = state.date;
+        renderAll();
+    }
+
+    // Register safe-exit listener if modifications are pending
+    window.addEventListener('beforeunload', (event) => {
+        if (hasUnsavedChanges) {
+            event.preventDefault();
+            event.returnValue = 'You have unsaved watchbill changes. Leave page anyway?';
+            return event.returnValue;
+        }
+    });
+
+    // Start App
+    init();
+</script>
+</body>
+</html>

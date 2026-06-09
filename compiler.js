@@ -641,6 +641,7 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         const raw = String(shipTarget || 'offline').trim().toLowerCase();
         if (raw === 'sharepoint' || raw === 'firepit-sharepoint') return 'sharepoint';
         if (raw === 'legacy-sharepoint' || raw === 'sharepoint-legacy' || raw === 'intelshare') return 'legacy-sharepoint';
+        if (raw === 'fusion-wiki-file-list' || raw === 'fusion-file-list' || raw === 'confluence-file-list' || raw === 'confluence-wiki-file-list') return 'fusion-wiki-file-list';
         if (raw === 'fusion-wiki-fullscreen' || raw === 'fusion-fullscreen' || raw === 'confluence-fullscreen' || raw === 'confluence-wiki-fullscreen') return 'fusion-wiki-fullscreen';
         if (raw === 'fusion' || raw === 'fusion-wiki' || raw === 'confluence' || raw === 'confluence-wiki') return 'fusion-wiki';
         return 'offline';
@@ -651,10 +652,16 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         return normalized === 'sharepoint' || normalized === 'legacy-sharepoint';
     },
 
+    isCurrentArtifactShipTarget(shipTarget) {
+        const normalized = this.normalizeShipTarget(shipTarget);
+        return this.isSharePointShipTarget(normalized) || normalized === 'fusion-wiki-file-list';
+    },
+
     getShipTargetLabel(shipTarget) {
         const normalized = this.normalizeShipTarget(shipTarget);
         if (normalized === 'sharepoint') return 'SharePoint Firepit';
         if (normalized === 'legacy-sharepoint') return 'Legacy SharePoint';
+        if (normalized === 'fusion-wiki-file-list') return 'Fusion Wiki File List';
         if (normalized === 'fusion-wiki-fullscreen') return 'Fusion Wiki Fullscreen';
         if (normalized === 'fusion-wiki') return 'Fusion Wiki';
         return 'Offline';
@@ -686,6 +693,395 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         } catch (_) {
             return false;
         }
+    },
+
+    buildFusionFirepitRendererHtml({ fullscreen = true } = {}) {
+        return String.raw`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fusion Firepit HTML Renderer</title>
+  <style>
+    :root { color-scheme: light; --bg:#f6f7f9; --panel:#fff; --ink:#17202a; --muted:#5f6b7a; --border:#d7dce3; --accent:#0c66e4; --danger:#b42318; --ok:#067647; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+    .app { min-height: 100%; display: grid; grid-template-rows: auto 1fr; }
+    header { background: var(--panel); border-bottom: 1px solid var(--border); padding: 10px 12px; position: sticky; top: 0; z-index: 5; }
+    .bar { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: end; width: 100%; }
+    label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0; }
+    input[type="url"] { width: 100%; height: 42px; border: 1px solid var(--border); border-radius: 6px; padding: 0 12px; color: var(--ink); background: #fff; font: inherit; }
+    input[type="url"]:focus { border-color: var(--accent); outline: 3px solid rgba(12,102,228,.18); }
+    button { height: 42px; border: 1px solid var(--accent); border-radius: 6px; padding: 0 14px; background: var(--accent); color: #fff; cursor: pointer; font: 700 14px Arial, Helvetica, sans-serif; white-space: nowrap; }
+    button.secondary { background: #fff; color: #093f91; border-color: var(--border); }
+    button:disabled { cursor: wait; opacity: .65; }
+    .settings { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; width: 100%; margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+    .settings label { display: inline-flex; gap: 7px; align-items: center; margin: 0; color: var(--muted); font-size: 13px; font-weight: 400; text-transform: none; }
+    main { width: 100%; padding: 8px 10px 10px; min-height: 0; display: grid; grid-template-rows: auto 1fr; gap: 8px; }
+    .status { min-height: 36px; border: 1px solid var(--border); border-radius: 6px; background: var(--panel); padding: 9px 12px; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+    .status.error { border-color: rgba(180,35,24,.35); color: var(--danger); background: #fff4f2; }
+    .status.ok { border-color: rgba(6,118,71,.3); color: var(--ok); background: #f3fcf7; }
+    .frame-wrap { border: 1px solid var(--border); border-radius: 8px; background: var(--panel); overflow: hidden; min-height: 620px; height: calc(100vh - 116px); }
+    body.app-page-view { overflow: hidden; background: #fff; }
+    body.app-page-view .app { position: fixed; inset: 0; z-index: 2147483647; width: 100vw; max-width: none; height: 100vh; min-height: 100vh; margin: 0; padding: 0; background: #fff; }
+    body.app-page-view header, body.app-page-view .status { display: none; }
+    body.app-page-view main { position: fixed; inset: 0; z-index: 2147483647; display: block; width: 100vw; height: 100vh; padding: 0; margin: 0; background: #fff; }
+    body.app-page-view .frame-wrap { position: fixed; inset: 0; border: 0; border-radius: 0; width: 100vw; height: 100vh; min-height: 100vh; background: #fff; }
+    iframe { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+    @media (max-width: 760px) { header { position: static; } .bar { grid-template-columns: 1fr; } button { width: 100%; } .frame-wrap { height: calc(100vh - 280px); } }
+  </style>
+</head>
+<body>
+  <div id="forge-fusion-firepit-renderer" class="app">
+    <header>
+      <div class="bar">
+        <div>
+          <label for="sourceUrl">HTML file link</label>
+          <input id="sourceUrl" type="url" placeholder="Paste a Fusion attachment or download link to an .html file">
+        </div>
+        <button id="renderButton" type="button">Render App</button>
+        <button id="directButton" class="secondary" type="button">Open Raw</button>
+      </div>
+      <div class="settings">
+        <label><input id="sandboxFrame" type="checkbox"> Sandbox iframe</label>
+        <label><input id="sameOrigin" type="checkbox" checked> Allow same-origin iframe scripts</label>
+        <label><input id="saveLink" type="checkbox" checked> Save link in page properties</label>
+      </div>
+    </header>
+    <main>
+      <div id="status" class="status">Paste an HTML attachment link, then render it.</div>
+      <div id="frameWrap" class="frame-wrap">
+        <iframe id="preview" title="Rendered HTML preview" allow="unload; fullscreen; clipboard-read; clipboard-write; encrypted-media; web-share" allowfullscreen></iframe>
+      </div>
+    </main>
+  </div>
+  <script>
+    const RENDERER_DEFAULT_FULLSCREEN = ${fullscreen ? 'true' : 'false'};
+    const RENDERER_PROPERTY_KEY = 'confluence-html-renderer-source-url-v1';
+    const sourceInput = document.getElementById('sourceUrl');
+    const renderButton = document.getElementById('renderButton');
+    const directButton = document.getElementById('directButton');
+    const sandboxInput = document.getElementById('sandboxFrame');
+    const sameOriginInput = document.getElementById('sameOrigin');
+    const saveLinkInput = document.getElementById('saveLink');
+    const statusBox = document.getElementById('status');
+    const frameWrap = document.getElementById('frameWrap');
+    const preview = document.getElementById('preview');
+    const appRoot = document.getElementById('forge-fusion-firepit-renderer');
+    const pageViewStyle = {
+      body: '',
+      app: '',
+      main: '',
+      frameWrap: '',
+      preview: ''
+    };
+    let appOriginalParent = appRoot ? appRoot.parentNode : null;
+    let appOriginalNextSibling = appRoot ? appRoot.nextSibling : null;
+
+    function setStatus(message, state) {
+      statusBox.textContent = message;
+      statusBox.className = 'status' + (state ? ' ' + state : '');
+    }
+    function setBusy(isBusy) {
+      renderButton.disabled = isBusy;
+      directButton.disabled = isBusy;
+    }
+    function enterPageView() {
+      if (appRoot && document.body && appRoot.parentNode !== document.body) {
+        appOriginalParent = appRoot.parentNode;
+        appOriginalNextSibling = appRoot.nextSibling;
+        document.body.appendChild(appRoot);
+      }
+      const main = appRoot ? appRoot.querySelector('main') : null;
+      pageViewStyle.body = document.body ? document.body.getAttribute('style') || '' : '';
+      pageViewStyle.app = appRoot ? appRoot.getAttribute('style') || '' : '';
+      pageViewStyle.main = main ? main.getAttribute('style') || '' : '';
+      pageViewStyle.frameWrap = frameWrap ? frameWrap.getAttribute('style') || '' : '';
+      pageViewStyle.preview = preview ? preview.getAttribute('style') || '' : '';
+      if (document.body) {
+        document.body.style.overflow = 'hidden';
+      }
+      if (appRoot) {
+        appRoot.style.cssText = 'position:fixed!important;inset:0!important;z-index:2147483647!important;width:100vw!important;height:100vh!important;max-width:none!important;min-height:100vh!important;margin:0!important;padding:0!important;background:#fff!important;display:block!important;';
+      }
+      if (main) {
+        main.style.cssText = 'position:fixed!important;inset:0!important;z-index:2147483647!important;display:block!important;width:100vw!important;height:100vh!important;margin:0!important;padding:0!important;background:#fff!important;';
+      }
+      if (frameWrap) {
+        frameWrap.style.cssText = 'position:fixed!important;inset:0!important;border:0!important;border-radius:0!important;width:100vw!important;height:100vh!important;min-height:100vh!important;margin:0!important;padding:0!important;background:#fff!important;overflow:hidden!important;';
+      }
+      if (preview) {
+        preview.style.cssText = 'display:block!important;width:100%!important;height:100%!important;border:0!important;background:#fff!important;';
+      }
+      document.body.classList.add('app-page-view');
+    }
+    function exitPageView() {
+      document.body.classList.remove('app-page-view');
+      const main = appRoot ? appRoot.querySelector('main') : null;
+      if (document.body) document.body.setAttribute('style', pageViewStyle.body);
+      if (appRoot) appRoot.setAttribute('style', pageViewStyle.app);
+      if (main) main.setAttribute('style', pageViewStyle.main);
+      if (frameWrap) frameWrap.setAttribute('style', pageViewStyle.frameWrap);
+      if (preview) preview.setAttribute('style', pageViewStyle.preview);
+      if (appRoot && appOriginalParent && appRoot.parentNode === document.body) {
+        appOriginalParent.insertBefore(appRoot, appOriginalNextSibling);
+      }
+    }
+    function updateSandbox() {
+      if (!sandboxInput.checked) {
+        preview.removeAttribute('sandbox');
+        sameOriginInput.disabled = true;
+        return;
+      }
+      sameOriginInput.disabled = false;
+      const permissions = ['allow-scripts','allow-forms','allow-modals','allow-popups','allow-downloads','allow-top-navigation-by-user-activation'];
+      if (sameOriginInput.checked) permissions.push('allow-same-origin');
+      preview.setAttribute('sandbox', permissions.join(' '));
+    }
+    function readMeta(name) {
+      const tag = document.querySelector('meta[name="' + name.replace(/"/g, '\\"') + '"]');
+      if (tag) return tag.getAttribute('content') || '';
+      try {
+        if (window.AJS && window.AJS.Meta && typeof window.AJS.Meta.get === 'function') return window.AJS.Meta.get(name) || '';
+      } catch (error) {}
+      return '';
+    }
+    function getRendererPageId() {
+      return readMeta('ajs-page-id') || readMeta('ajs-content-id');
+    }
+    function getRendererBaseUrl() {
+      return (readMeta('ajs-base-url') || readMeta('confluence-base-url') || window.location.origin).replace(/\/$/, '');
+    }
+    function getConfluenceBaseUrl(url) {
+      const parts = url.pathname.split('/').filter(Boolean);
+      const index = parts.findIndex((part) => ['spaces','pages','display','download','rest'].includes(part));
+      return index > 0 ? url.origin + '/' + parts.slice(0, index).join('/') : url.origin;
+    }
+    function encodePathPart(part) {
+      return encodeURIComponent(part).replace(/%2F/g, '/');
+    }
+    function parseConfluencePreview(url) {
+      const preview = url.searchParams.get('preview');
+      if (!preview) return null;
+      const parts = preview.split('/').filter(Boolean);
+      if (parts.length < 3) return null;
+      return { rawPreview: preview, pageId: parts[0], attachmentId: parts[1], fileName: parts.slice(2).join('/') };
+    }
+    function parseConfluenceDownload(url) {
+      const match = url.pathname.match(/\/download\/attachments\/([^/]+)\/(.+)$/i);
+      if (!match) return null;
+      return { pageId: decodeURIComponent(match[1]), attachmentId: url.searchParams.get('attachmentId') || '', fileName: decodeURIComponent(match[2]) };
+    }
+    function normalizeConfluenceUrl(rawValue) {
+      const value = String(rawValue || '').trim();
+      if (!value) throw new Error('Paste a link to an HTML file first.');
+      const url = new URL(value, window.location.href);
+      if (/\/pages\/viewpageattachments\.action$/i.test(url.pathname)) {
+        throw new Error('That is the attachment list page. Copy the link for the actual .html attachment or its download action.');
+      }
+      url.hash = '';
+      return url;
+    }
+    function uniqueUrls(urls) {
+      const seen = new Set();
+      return urls.filter((url) => {
+        if (seen.has(url.href)) return false;
+        seen.add(url.href);
+        return true;
+      });
+    }
+    async function getRestAttachmentDownloadUrl(pageUrl, previewInfo) {
+      const baseUrl = getConfluenceBaseUrl(pageUrl);
+      const restUrl = new URL(baseUrl + '/rest/api/content/' + encodeURIComponent(previewInfo.attachmentId));
+      restUrl.searchParams.set('expand', '_links');
+      const response = await fetch(restUrl.href, { credentials: 'include', cache: 'no-store' });
+      if (!response.ok) return null;
+      const attachment = await response.json();
+      return attachment && attachment._links && attachment._links.download ? new URL(attachment._links.download, baseUrl) : null;
+    }
+    async function getRenderableUrls(rawValue) {
+      const url = normalizeConfluenceUrl(rawValue);
+      const previewInfo = parseConfluencePreview(url);
+      if (!previewInfo) return [url];
+      const baseUrl = getConfluenceBaseUrl(url);
+      const byId = new URL(baseUrl + '/download/attachments/' + encodeURIComponent(previewInfo.pageId) + '/' + encodePathPart(previewInfo.fileName));
+      byId.searchParams.set('attachmentId', previewInfo.attachmentId);
+      const byName = new URL(baseUrl + '/download/attachments/' + encodeURIComponent(previewInfo.pageId) + '/' + encodePathPart(previewInfo.fileName));
+      const withPreview = new URL(byName.href);
+      withPreview.searchParams.set('preview', previewInfo.rawPreview);
+      const urls = [byId, byName, withPreview];
+      try {
+        const restUrl = await getRestAttachmentDownloadUrl(url, previewInfo);
+        if (restUrl) urls.unshift(restUrl);
+      } catch (error) {}
+      return uniqueUrls(urls);
+    }
+    async function fetchJson(url, options = {}) {
+      const response = await fetch(url, {
+        ...options,
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-Atlassian-Token': 'no-check', ...(options.headers || {}) }
+      });
+      const text = await response.text();
+      let value = null;
+      if (text) {
+        try { value = JSON.parse(text); } catch (error) { throw new Error('Fusion returned non-JSON content for ' + url + '.'); }
+      }
+      if (!response.ok) {
+        const message = value && value.message ? value.message : response.statusText;
+        const error = new Error('Fusion property request failed with HTTP ' + response.status + ': ' + message);
+        error.status = response.status;
+        throw error;
+      }
+      return value;
+    }
+    async function getRendererProperty() {
+      const pageId = getRendererPageId();
+      if (!pageId) return null;
+      const propertyUrl = getRendererBaseUrl() + '/rest/api/content/' + encodeURIComponent(pageId) + '/property/' + encodeURIComponent(RENDERER_PROPERTY_KEY) + '?expand=version';
+      try { return await fetchJson(propertyUrl, { method: 'GET' }); } catch (error) { if (error.status === 404) return null; throw error; }
+    }
+    async function saveRendererSourceUrl(sourceUrl) {
+      if (!saveLinkInput.checked) return;
+      const pageId = getRendererPageId();
+      if (!pageId) {
+        setStatus('Rendered, but this page has no Fusion page id meta tag, so the source link was not saved.', 'error');
+        return;
+      }
+      const propertyBaseUrl = getRendererBaseUrl() + '/rest/api/content/' + encodeURIComponent(pageId) + '/property';
+      const existing = await getRendererProperty();
+      const value = { sourceUrl: sourceUrl.href, updatedAt: new Date().toISOString() };
+      if (existing) {
+        await fetchJson(propertyBaseUrl + '/' + encodeURIComponent(RENDERER_PROPERTY_KEY), {
+          method: 'PUT',
+          body: JSON.stringify({ value, version: { number: existing.version.number + 1 } })
+        });
+        return;
+      }
+      await fetchJson(propertyBaseUrl, { method: 'POST', body: JSON.stringify({ key: RENDERER_PROPERTY_KEY, value }) });
+    }
+    async function loadSavedSourceUrl() {
+      const initial = new URLSearchParams(window.location.search).get('url');
+      if (initial && initial !== 'null') {
+        sourceInput.value = initial;
+        return true;
+      }
+      try {
+        const prop = await getRendererProperty();
+        if (prop && prop.value && prop.value.sourceUrl) {
+          sourceInput.value = prop.value.sourceUrl;
+          return true;
+        }
+      } catch (error) {
+        setStatus(error.message, 'error');
+      }
+      return false;
+    }
+    function escapeAttribute(value) {
+      return String(value || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function getInjectedMetaTags(originalUrl, sourceUrl) {
+      const preview = parseConfluencePreview(originalUrl);
+      const originalDownload = parseConfluenceDownload(originalUrl);
+      const sourceDownload = parseConfluenceDownload(sourceUrl);
+      const pageId = (preview && preview.pageId) || (originalDownload && originalDownload.pageId) || (sourceDownload && sourceDownload.pageId) || readMeta('ajs-page-id') || readMeta('ajs-content-id');
+      const baseUrl = getConfluenceBaseUrl(originalUrl || sourceUrl);
+      const values = {
+        'ajs-page-id': pageId,
+        'ajs-content-id': pageId,
+        'ajs-base-url': baseUrl,
+        'ajs-remote-user': readMeta('ajs-remote-user'),
+        'ajs-current-user-fullname': readMeta('ajs-current-user-fullname'),
+        'ajs-remote-user-key': readMeta('ajs-remote-user-key')
+      };
+      return Object.keys(values).filter((name) => values[name]).map((name) => '<meta name="' + name + '" content="' + escapeAttribute(values[name]) + '">').join('');
+    }
+    function injectBaseTag(html, sourceUrl, originalUrl) {
+      const baseHref = sourceUrl.href.replace(/[^/?#]+(?:[?#].*)?$/, '');
+      const baseTag = '<base data-firepit-managed-base="true" href="' + escapeAttribute(baseHref) + '">';
+      const metaTags = getInjectedMetaTags(originalUrl || sourceUrl, sourceUrl);
+      if (/<head[\s>]/i.test(html)) return html.replace(/<head([^>]*)>/i, '<head$1>' + baseTag + metaTags);
+      return '<!doctype html><html><head>' + baseTag + metaTags + '</head><body>' + html + '</body></html>';
+    }
+    function renderHtml(html) {
+      preview.removeAttribute('src');
+      preview.srcdoc = html;
+      setStatus(RENDERER_DEFAULT_FULLSCREEN ? 'Rendered full screen.' : 'Rendered inside the Fusion page frame.', 'ok');
+    }
+    async function renderFetched() {
+      setBusy(true);
+      updateSandbox();
+      if (RENDERER_DEFAULT_FULLSCREEN) enterPageView();
+      try {
+        const originalUrl = normalizeConfluenceUrl(sourceInput.value);
+        const candidateUrls = await getRenderableUrls(sourceInput.value);
+        let response = null;
+        let lastError = null;
+        let renderedSourceUrl = candidateUrls[0];
+        for (const candidateUrl of candidateUrls) {
+          setStatus('Fetching ' + candidateUrl.href);
+          try {
+            response = await fetch(candidateUrl.href, { credentials: 'include', cache: 'no-store' });
+            if (response.ok) {
+              renderedSourceUrl = candidateUrl;
+              break;
+            }
+            lastError = new Error(candidateUrl.href + ' returned HTTP ' + response.status + '.');
+          } catch (error) {
+            lastError = error;
+          }
+        }
+        if (!response || !response.ok) throw lastError || new Error('Fetch failed.');
+        const sourceHref = response.url || renderedSourceUrl.href;
+        const renderedHtml = injectBaseTag(await response.text(), new URL(sourceHref), originalUrl);
+        try {
+          await saveRendererSourceUrl(new URL(sourceInput.value, window.location.href));
+        } catch (error) {
+          console.warn('Fusion Firepit renderer could not save the source URL:', error);
+        }
+        renderHtml(renderedHtml);
+      } catch (error) {
+        exitPageView();
+        setStatus(error.message + ' If this fails, Fusion is blocking authenticated fetch for this attachment.', 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+    async function openDirect() {
+      try {
+        setBusy(true);
+        updateSandbox();
+        const sourceUrl = (await getRenderableUrls(sourceInput.value))[0];
+        try {
+          await saveRendererSourceUrl(new URL(sourceInput.value, window.location.href));
+        } catch (error) {
+          console.warn('Fusion Firepit renderer could not save the source URL:', error);
+        }
+        preview.removeAttribute('srcdoc');
+        preview.src = sourceUrl.href;
+        setStatus('Opened the raw attachment URL directly from ' + sourceUrl.href + '.', 'ok');
+      } catch (error) {
+        setStatus(error.message, 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+    renderButton.addEventListener('click', renderFetched);
+    directButton.addEventListener('click', openDirect);
+    sandboxInput.addEventListener('change', updateSandbox);
+    sameOriginInput.addEventListener('change', updateSandbox);
+    sourceInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') renderFetched(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') exitPageView(); });
+    updateSandbox();
+    loadSavedSourceUrl().then((hasSourceUrl) => { if (hasSourceUrl && sourceInput.value) renderFetched(); });
+  </script>
+</body>
+</html>`;
+    },
+
+    async loadFusionFirepitRendererHtml({ fullscreen = true } = {}) {
+        return this.buildFusionFirepitRendererHtml({ fullscreen });
     },
 
     getLatestReleaseForTarget(releases, shipTarget) {
@@ -892,6 +1288,8 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         releaseType,
         shipTarget,
         copyToClipboard = false,
+        clipboardText = '',
+        clipboardFallbackToFinalHtml = true,
         shipSavedModalTitle = '',
         clipboardSuccessMessage = '',
         clipboardFailureMessage = '',
@@ -901,11 +1299,11 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         const normalizedShipTarget = this.normalizeShipTarget(shipTarget);
         const versionInfo = await this.getNextShipVersionInfo(normalizedReleaseType);
         const dirHandle = versionInfo.metadata.dirHandle || await this.getShippedAppsDirectory(true);
-        const isSharePointTarget = this.isSharePointShipTarget(normalizedShipTarget);
-        const outputName = isSharePointTarget
+        const isCurrentArtifactTarget = this.isCurrentArtifactShipTarget(normalizedShipTarget);
+        const outputName = isCurrentArtifactTarget
             ? this.buildCurrentOutputName(outName)
             : this.buildVersionedOutputName(outName, versionInfo.nextVersion);
-        const archivedMetadata = isSharePointTarget
+        const archivedMetadata = isCurrentArtifactTarget
             ? await this.archiveExistingCurrentArtifactForTarget(dirHandle, outName, versionInfo.metadata, normalizedShipTarget)
             : { releases: Array.isArray(versionInfo.metadata.releases) ? versionInfo.metadata.releases.slice() : [] };
 
@@ -946,8 +1344,9 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         await metadataWritable.write(JSON.stringify(metadata, null, 2));
         await metadataWritable.close();
 
+        const clipboardValue = String(clipboardText || '').trim() || (clipboardFallbackToFinalHtml ? finalHtml : '');
         const clipboardCopied = copyToClipboard
-            ? await this.copyTextToClipboard(finalHtml)
+            ? await this.copyTextToClipboard(clipboardValue)
             : false;
 
         this.showShipSavedModal({
@@ -1007,8 +1406,10 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
                 const message = clipboardCopied
                     ? (clipboardSuccessMessage || 'The shipped code has been copied to your clipboard.')
                     : (clipboardFailureMessage || 'The shipped file was saved, but Forge could not copy it to your clipboard.');
-                const statusClass = clipboardCopied ? 'alert-success' : 'alert-warning';
-                clipboardEl.innerHTML = `<div class="alert ${statusClass} py-2 mb-3">${this.escapeHtml(message)}</div>`;
+                const statusClass = clipboardCopied
+                    ? 'forge-ship-clipboard-alert-success'
+                    : 'forge-ship-clipboard-alert-warning';
+                clipboardEl.innerHTML = `<div class="alert forge-ship-clipboard-alert ${statusClass} py-2 mb-3">${this.escapeHtml(message)}</div>`;
             } else {
                 clipboardEl.innerHTML = '';
             }
@@ -1963,6 +2364,8 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
             shipSavedModalTitle: '',
             clipboardSuccessMessage: '',
             clipboardFailureMessage: '',
+            copyFusionFirepitRendererToClipboard: false,
+            fusionFirepitFullscreen: true,
             deploymentInstructionsHtml: '',
             fusionBridgeMode: false,
             wrapFusionFullscreenIframe: false,
@@ -2759,15 +3162,27 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
                 scriptSrcTokens.push("'wasm-unsafe-eval'");
             }
             const scriptSrc = scriptSrcTokens.join(' ');
+            const styleSrcTokens = ["style-src", "'unsafe-inline'"];
+            const imgSrcTokens = ["img-src", "data:", "blob:"];
+            const fontSrcTokens = ["font-src", "data:"];
+            const mediaSrcTokens = ["media-src"];
+            if (useFusionBridgeMode) {
+                styleSrcTokens.push("'self'");
+                imgSrcTokens.push("'self'");
+                fontSrcTokens.push("'self'");
+                mediaSrcTokens.push("'self'", "blob:", "data:");
+            } else {
+                mediaSrcTokens.push("'none'");
+            }
             const directives = [
                 "default-src 'none'",
                 scriptSrc,
-                "style-src 'unsafe-inline'",
+                styleSrcTokens.join(' '),
                 "worker-src blob:",
                 connectSrcDirective,
-                "img-src data: blob:",
-                "font-src data:",
-                "media-src 'none'",
+                imgSrcTokens.join(' '),
+                fontSrcTokens.join(' '),
+                mediaSrcTokens.join(' '),
                 "manifest-src 'none'",
                 "form-action 'none'",
                 "frame-src 'none'",
@@ -5342,6 +5757,8 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
         if (opts.forceNoSecurityHeaders) {
             const suffix = normalizedShipTarget === 'legacy-sharepoint'
                 ? ' - Legacy Sharepoint'
+                : normalizedShipTarget === 'fusion-wiki-file-list'
+                    ? ' - Fusion Wiki File List'
                 : normalizedShipTarget === 'fusion-wiki'
                     ? ' - Fusion Wiki'
                     : normalizedShipTarget === 'fusion-wiki-fullscreen'
@@ -5372,6 +5789,18 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
 
         if (opts.saveToShippedApps) {
             try {
+                let clipboardText = '';
+                let clipboardFallbackToFinalHtml = true;
+                if (opts.copyFusionFirepitRendererToClipboard) {
+                    clipboardFallbackToFinalHtml = false;
+                    try {
+                        clipboardText = await this.loadFusionFirepitRendererHtml({
+                            fullscreen: opts.fusionFirepitFullscreen
+                        });
+                    } catch (error) {
+                        console.warn('Could not load fusion-firepit.html for clipboard copy:', error);
+                    }
+                }
                 const shipResult = await this.saveCompiledArtifactToShippedApps({
                     finalHtml,
                     outName: baseOutName,
@@ -5379,6 +5808,8 @@ These APIs are blocked to prevent unexpected hardware access in offline/secure e
                     releaseType: opts.shipReleaseType,
                     shipTarget: opts.shipTarget,
                     copyToClipboard: opts.copyToClipboardAfterSave,
+                    clipboardText,
+                    clipboardFallbackToFinalHtml,
                     shipSavedModalTitle: opts.shipSavedModalTitle,
                     clipboardSuccessMessage: opts.clipboardSuccessMessage,
                     clipboardFailureMessage: opts.clipboardFailureMessage,
