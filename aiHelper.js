@@ -692,25 +692,43 @@ Confluence context discovery
 
 Content property API
 --------------------
-- Use one unique namespaced \`PROPERTY_KEY\` for this app, for example \`<app-name>-state-v1\`.
-- Do not reuse generic keys from another app.
+- Use one unique namespaced property key family for this app, for example \`<app-name>-state-v1\`.
+- For small and medium stores, use a single base \`PROPERTY_KEY\`.
+- For large stores, support sharded content properties because each Confluence content property value has a roughly 32 KB limit. Use deterministic keys in the same namespace, for example:
+  - \`PROPERTY_KEY\` for a small unsharded store or a manifest/index record
+  - \`\${PROPERTY_KEY}-chunk-0001\`, \`\${PROPERTY_KEY}-chunk-0002\`, etc. for shard values
+- Do not reuse generic keys from another app, and do not create unrelated property keys outside this app's namespace.
 - Implement these helpers:
   - \`confluenceFetch(path, options)\`
   - \`parseJsonResponse(response)\`
   - \`getProperty()\`
   - \`createProperty(value)\`
   - \`updateProperty(value, nextVersion)\`
+  - \`deleteProperty(key)\` if chunk cleanup is needed
+  - \`getPropertyByKey(key)\`
+  - \`createPropertyByKey(key, value)\`
+  - \`updatePropertyByKey(key, value, nextVersion)\`
+  - \`listStoreProperties()\` if stale chunk discovery is needed
+  - \`serializeStoreForProperties(store)\`
+  - \`readStoreFromProperties()\`
+  - \`writeStoreToProperties(store)\`
   - \`getWritableProperty()\`
   - \`mutateStore(mutator)\`
   - \`createEmptyStore()\`
   - \`normalizeStore(value)\`
 - Use these REST paths:
-  - \`GET /rest/api/content/{pageId}/property/{PROPERTY_KEY}\`
+  - \`GET /rest/api/content/{pageId}/property/{key}\`
+  - \`GET /rest/api/content/{pageId}/property?limit=...\` when listing is needed for stale chunk cleanup
   - \`POST /rest/api/content/{pageId}/property\`
-  - \`PUT /rest/api/content/{pageId}/property/{PROPERTY_KEY}\`
+  - \`PUT /rest/api/content/{pageId}/property/{key}\`
+  - \`DELETE /rest/api/content/{pageId}/property/{key}\` only for stale chunk cleanup
 - On updates, include \`version: { number: currentVersion + 1 }\`.
 - On HTTP 409 version conflicts, re-read the latest property, reapply the mutation, and retry several times.
 - On HTTP 401 or 403, show that the current user may not have permission to write Confluence page content properties.
+- Keep individual property values comfortably below Confluence's limit. Prefer a conservative max serialized shard size such as 24-28 KB so JSON overhead and encoding differences do not push a value over the limit.
+- If sharding is used, write chunk properties first, then write the base manifest last. The manifest should include \`schema\`, \`mode: "chunked"\`, \`updatedAt\`, \`updatedBy\`, \`chunkKeys\`, \`chunkCount\`, and a lightweight checksum or byte length. Readers should load the manifest, fetch all chunks, reassemble the JSON, validate it, then normalize it.
+- If the store later shrinks enough for a single property, write the single-property value to \`PROPERTY_KEY\` and delete stale chunk keys in this namespace after the successful base update.
+- For high-volume data, prefer compact JSON and avoid persisting derived caches, rendered HTML, or duplicate indexes unless they are necessary for offline usability.
 
 State model
 -----------
